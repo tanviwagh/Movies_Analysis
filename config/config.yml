@@ -1,0 +1,15 @@
+aws_credentials:
+    ACCESS_KEY: 'AKIATLLBAJQSMYX4LUUZ'
+    SECRET_KEY: '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'
+s3_bucket_details:
+    region_name: 'us-east-1'
+    bucket_name: 'movie_buck'
+    key: 'dump'
+
+file_list:
+  - an item
+  - another item
+  - 1.25
+  - a_key: a_value
+  -
+    - another list

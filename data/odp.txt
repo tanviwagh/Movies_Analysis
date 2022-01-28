@@ -1,0 +1,53 @@
+
+
+Oracle DataPump-
+The pattern involves creating a data dump file from the source database, storing the file in an Amazon Simple Storage Service (Amazon S3) bucket, and then restoring the data to an Amazon RDS for Oracle DB instance. This pattern is useful when you encounter limitations using AWS Database Migration Service (AWS DMS) for the migration.
+Oracle Data Pump is available only for Oracle Database 10g Release 1 (10.1) and later versions.
+https://oracle-base.com/articles/10g/oracle-data-pump-10g
+ 
+Tools
+Oracle Data Pump - Oracle Data Pump is used to export the data dump (.dmp) file to the Oracle server, and to import it into Amazon RDS for Oracle. For more information, see Importing Data with Oracle Data Pump and an Amazon S3 Bucket in the Amazon RDS documentation.
+Amazon S3 - This pattern uses an S3 bucket to store the data dump file.
+AWS IAM - To create the roles and policies necessary for migrating data from Amazon S3 to Amazon RDS for Oracle.
+Oracle SQL Developer - SQL Developer interacts with both the on-premises Oracle database and Amazon RDS for Oracle, to run SQL commands required for exporting and importing data.
+STEPS-
+1. Create the S3 bucket - Store the database dump file and provide necessary access permissions for dump file storage.
+2. Create the IAM role and assign policies.
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html#oracle-s3-integration.preparing
+3. Create the data dump file from the source Oracle database.	
+SQL DECLAREÿ
+hdnl NUMBER;
+BEGIN
+hdnl := DBMS_DATAPUMP.OPEN( operation => 'EXPORT', job_mode => 'SCHEMA', job_name=>null);
+DBMS_DATAPUMP.ADD_FILE(handle => hdnl, filename => 'sample.dmp', directory => 'DATA_PUMP_DIR', filetype => dbms_datapump.ku$_file_type_dump_file);
+DBMS_DATAPUMP.ADD_FILE( handle => hdnl, filename => 'exp.log', directory => 'DATA_PUMP_DIR', filetype => dbms_datapump.ku$_file_type_log_file);
+DBMS_DATAPUMP.METADATA_FILTER(hdnl,'SCHEMA_EXPR','IN (''ADMIN'')');
+DBMS_DATAPUMP.START_JOB(hdnl);
+END;
+/
+4. Upload the dump file to the S3 bucket.
+CLI Command- Multipart Upload
+aws s3api create-multipart-upload --bucket <bucket_to_store_dumpfile> --key sample.dmp
+5. Create the target Amazon RDS for Oracle DB instance and assign the Amazon S3 integration role.
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Tutorials.WebServerDB.CreateDBInstance.html
+6. Import the dump file into the target database.
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Oracle.Procedural.Importing.html#Oracle.Procedural.Importing.DataPump.S3
+	1. Connect to the target Amazon RDS for Oracle database from Oracle SQL Developer.
+create user <USER NAME> identified by <PASSWORD>;
+grant create session, resource to <USER NAME>;
+alter user <USER NAME> quota 100M on users;
+	 2. Import the dump file from the S3 bucket to the Amazon RDS for Oracle database
+SELECT rdsadmin.rdsadmin_s3_tasks.download_from_s3(
+ÿp_bucket_name ÿ ÿ=> ÿ'my-s3-integration1', ÿ ÿ ÿÿ
+ÿp_directory_name => ÿ'DATA_PUMP_DIR')ÿ
+ÿ AS TASK_ID FROM DUAL;
+7. Restore the imported dump file to the target database.	
+DECLARE
+hdnl NUMBER;
+BEGIN
+hdnl := DBMS_DATAPUMP.OPEN( operation => 'IMPORT', job_mode => 'SCHEMA', job_name=>null);
+DBMS_DATAPUMP.ADD_FILE( handle => hdnl, filename => 'sample.dmp', directory => 'DATA_PUMP_DIR', filetype => dbms_datapump.ku$_file_type_dump_file);
+DBMS_DATAPUMP.METADATA_FILTER(hdnl,'SCHEMA_EXPR','IN (''ADMIN'')');
+DBMS_DATAPUMP.START_JOB(hdnl);
+END;
+/
