@@ -22,9 +22,9 @@ if __name__ == '__main__':
     
     s3_client = connect_to_aws_service('s3', access_key, secret_key, region_name)
 
-    txt_files = glob.glob('../data/*.txt')
+    json_files = glob.glob('../data/*.json')
 
-    for filename in txt_files:
+    for filename in json_files:
         key = "%s/%s" % (folder_name, os.path.basename(filename))
         delete_data_from_bucket(bucket_name, key)
  

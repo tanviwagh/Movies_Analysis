@@ -1,7 +1,7 @@
 
 aws_credentials:
-    access_key: 'AKIATLLBAJQSMYX4LUUZ'
-    secret_key: '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'
+    access_key: ''
+    secret_key: ''
 
 s3_bucket_details:
     region_name: 'us-east-1'

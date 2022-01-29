@@ -23,9 +23,12 @@ if __name__ == '__main__':
     s3_client = connect_to_aws_service('s3', access_key, secret_key, region_name)
 
     create_bucket(buck_name)
-    txt_files = glob.glob('../' + folder_name + '/*.txt')
+    
+    # need to add code for 'year' folder
 
-    for filename in txt_files:
+    json_files = glob.glob('../' + folder_name + '/*.json')
+
+    for filename in json_files:
         key = "%s/%s" % (folder_name, os.path.basename(filename))
         push_to_s3_bucket('../' + key ,buck_name, key)
  
