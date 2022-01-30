@@ -4,7 +4,7 @@ import pandas as pd
 import re
 import json
 import os
-from imdb import IMDb
+from imdb import IMDb, IMDbDataAccessError
 from utils import load_config
 
 def get_names_from_wiki(year):
@@ -42,7 +42,7 @@ def clean_movie_list(names):
 def find_unknown_id_movies(names):
     ids = []
 
-    imdb_obj = IMDb()
+    #imdb_obj = IMDb()
 
     for movie in names:
         search = imdb_obj.search_movie(movie)
@@ -81,33 +81,39 @@ def create_sub_folder(folder_name, year):
 
 
 def store_to_json(movie_dict, year):
-    imdb_obj = IMDb()
+    #imdb_obj = IMDb()
 
     for id in movie_dict.keys():
-        movie = imdb_obj.get_movie(id)
-        keys = movie.keys()
-    
-        dict = {}
-    
-        for attr in keys:
-            try:
-                if type(movie.data[attr]) == str:
-                    dict[attr] = movie.data[attr]
-            
-                if type(movie.data[attr]) == type(list) or type(movie.data[attr]) == list:
-                    if len(movie.data[attr]) == 1:
-                        dict[attr] = str(movie.data[attr][0])
-                    else:    
-                        attr_list = movie.data[attr]
-                        element_list = [] 
+        try:
+            movie = imdb_obj.get_movie(id)
+            keys = movie.keys()
+        
+            dict = {}
 
-                        for i in range(len(attr_list)):
-                            element_list.append(str(attr_list[i]))
-                            dict[attr] = element_list
-                        
-            except KeyError:
-                    #print(f"{attr} is unknown")
-                    pass
+            dict['id'] = id 
+
+            for attr in keys:
+                try:
+                    if type(movie.data[attr]) == str:
+                        dict[attr] = movie.data[attr]
+                
+                    if type(movie.data[attr]) == type(list) or type(movie.data[attr]) == list:
+                        if len(movie.data[attr]) == 1:
+                            dict[attr] = str(movie.data[attr][0])
+                        else:    
+                            attr_list = movie.data[attr]
+                            element_list = [] 
+
+                            for i in range(len(attr_list)):
+                                element_list.append(str(attr_list[i]))
+                                dict[attr] = element_list
+                            
+                except KeyError:
+                        #print(f"{attr} is unknown")
+                        pass
+
+        except IMDbDataAccessError:
+            print("error")
 
         file_name = '../data/' + str(year) + '/' + str(id) + '.json'  
         
@@ -121,8 +127,9 @@ if __name__ == '__main__':
 
     folder_name = config_data['data']['folder_name']
 
+    imdb_obj = IMDb()
     # loop through years
-    for year in range(2019,2020):
+    for year in range(2001,2002):
         names = get_names_from_wiki(year)
         print(len(names))
 
