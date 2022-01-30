@@ -47,7 +47,7 @@ def find_unknown_id_movies(names):
     for movie in names:
         search = imdb_obj.search_movie(movie)
 
-        if not search:
+        if not search: 
             ids.append('0')
             #print("ID not found")
 
@@ -85,24 +85,25 @@ def store_to_json(movie_dict, year):
 
     for id in movie_dict.keys():
         movie = imdb_obj.get_movie(id)
-        ky = movie.keys()
+        keys = movie.keys()
     
         dict = {}
     
-        for attr in ky:
+        for attr in keys:
             try:
                 if type(movie.data[attr]) == str:
                     dict[attr] = movie.data[attr]
-                    
-                # case where len(list) = 1 , no need to create a list 
-
+            
                 if type(movie.data[attr]) == type(list) or type(movie.data[attr]) == list:
-                    attr_list = movie.data[attr]
-                    element_list = [] 
-                    
-                    for i in range(len(attr_list)):
-                        element_list.append(str(attr_list[i]))
-                        dict[attr] = element_list
+                    if len(movie.data[attr]) == 1:
+                        dict[attr] = str(movie.data[attr][0])
+                    else:    
+                        attr_list = movie.data[attr]
+                        element_list = [] 
+
+                        for i in range(len(attr_list)):
+                            element_list.append(str(attr_list[i]))
+                            dict[attr] = element_list
                         
             except KeyError:
                     #print(f"{attr} is unknown")
@@ -110,8 +111,8 @@ def store_to_json(movie_dict, year):
 
         file_name = '../data/' + str(year) + '/' + str(id) + '.json'  
         
-        with open(file_name, 'w') as fp:
-            json.dump(dict, fp, indent=4)
+        with open(file_name, 'w') as file:
+            json.dump(dict, file, indent=4)
         
 
 if __name__ == '__main__':
@@ -121,7 +122,7 @@ if __name__ == '__main__':
     folder_name = config_data['data']['folder_name']
 
     # loop through years
-    for year in range(2021,2022):
+    for year in range(2019,2020):
         names = get_names_from_wiki(year)
         print(len(names))
 

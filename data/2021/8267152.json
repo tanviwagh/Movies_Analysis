@@ -17,45 +17,21 @@
         "Singamuthu",
         "Subhalekha Sudhakar"
     ],
-    "genres": [
-        "Romance"
-    ],
-    "countries": [
-        "India"
-    ],
-    "country codes": [
-        "in"
-    ],
-    "language codes": [
-        "ta"
-    ],
-    "color info": [
-        "Color"
-    ],
+    "genres": "Romance",
+    "countries": "India",
+    "country codes": "in",
+    "language codes": "ta",
+    "color info": "Color",
     "original air date": "2016 (India)",
     "cover url": "https://m.media-amazon.com/images/M/MV5BNDE5OWJmYTAtODZiZS00NmI1LTg5YmYtOWIwMWZkYzM5MGVkXkEyXkFqcGdeQXVyNTM0MDc1ODE@._V1_SY150_CR6,0,101,150_.jpg",
     "imdbID": "8267152",
-    "languages": [
-        "Tamil"
-    ],
+    "languages": "Tamil",
     "title": "Iruvar Ullam",
     "kind": "movie",
-    "directors": [
-        "G. Ramesh"
-    ],
-    "writers": [
-        "G. Ramesh"
-    ],
-    "editors": [
-        "V.T. Vijayan"
-    ],
-    "writer": [
-        "G. Ramesh"
-    ],
-    "director": [
-        "G. Ramesh"
-    ],
-    "plot": [
-        "Story about a IT professional settled in US and married to an Indian girl. After marriage both living a happily ever after life but things changed when his ex-fiance ruined his marriage life."
-    ]
+    "directors": "G. Ramesh",
+    "writers": "G. Ramesh",
+    "editors": "V.T. Vijayan",
+    "writer": "G. Ramesh",
+    "director": "G. Ramesh",
+    "plot": "Story about a IT professional settled in US and married to an Indian girl. After marriage both living a happily ever after life but things changed when his ex-fiance ruined his marriage life."
 }

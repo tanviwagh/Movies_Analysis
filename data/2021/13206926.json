@@ -37,21 +37,11 @@
         "Crime",
         "Drama"
     ],
-    "runtimes": [
-        "113"
-    ],
-    "countries": [
-        "India"
-    ],
-    "country codes": [
-        "in"
-    ],
-    "language codes": [
-        "ml"
-    ],
-    "color info": [
-        "Color"
-    ],
+    "runtimes": "113",
+    "countries": "India",
+    "country codes": "in",
+    "language codes": "ml",
+    "color info": "Color",
     "certificates": [
         "France:16::(self-applied)",
         "India:13::(self-applied)",
@@ -64,51 +54,29 @@
     "cover url": "https://m.media-amazon.com/images/M/MV5BN2UyMmI4MGEtOTMzMy00NTNjLWFmZWUtMzI1NzQ5NzU0NzBjXkEyXkFqcGdeQXVyMTI1NDAzMzM0._V1_SY150_CR5,0,101,150_.jpg",
     "imdbID": "13206926",
     "plot outline": "Joji, an engineering dropout and the youngest son of the rich plantation family lives with his aspirations of becoming a super wealthy NRI. But his father looks down on him as a proper loser. Driven by greed and blind ambition, Joji finally decide to execute his plans following an unexpected event in the family. Will he succeed in achieving his dreams?",
-    "languages": [
-        "Malayalam"
-    ],
+    "languages": "Malayalam",
     "title": "Joji",
     "kind": "movie",
-    "directors": [
-        "Dileesh Pothan"
-    ],
-    "writers": [
-        "Syam Pushkaran"
-    ],
+    "directors": "Dileesh Pothan",
+    "writers": "Syam Pushkaran",
     "producers": [
         "Dileesh Pothan",
         "Unnimaya Prasad",
         "Syam Pushkaran"
     ],
-    "composers": [
-        "Justin Varghese"
-    ],
-    "cinematographers": [
-        "Shyju Khalid"
-    ],
-    "editors": [
-        "Kiran Das"
-    ],
+    "composers": "Justin Varghese",
+    "cinematographers": "Shyju Khalid",
+    "editors": "Kiran Das",
     "editorial department": [
         "Sharath George Benny",
         "C.P. Remesh",
         "Saiju Sreedharan"
     ],
-    "art directors": [
-        "Gokul Das"
-    ],
-    "costume designers": [
-        "Mashar Hamsa"
-    ],
-    "make up department": [
-        "Ronex Xavier"
-    ],
-    "production managers": [
-        "Benny Kattappana"
-    ],
-    "assistant directors": [
-        "Prinish Prabhakaran"
-    ],
+    "art directors": "Gokul Das",
+    "costume designers": "Mashar Hamsa",
+    "make up department": "Ronex Xavier",
+    "production managers": "Benny Kattappana",
+    "assistant directors": "Prinish Prabhakaran",
     "sound department": [
         "Suraj Bardia",
         "Gokul K.R.",
@@ -130,23 +98,15 @@
         "\u30b8\u30e7\u30b8 (Japan, Japanese title)",
         "\u0414\u0436\u043e\u0434\u0436\u0438 (Russia)"
     ],
-    "writer": [
-        "Syam Pushkaran"
-    ],
-    "director": [
-        "Dileesh Pothan"
-    ],
+    "writer": "Syam Pushkaran",
+    "director": "Dileesh Pothan",
     "production companies": [
         "Bhavana Studios",
         "Fahadh Faasil and Friends",
         "Working Class Hero"
     ],
-    "distributors": [
-        "Amazon Prime Video"
-    ],
-    "other companies": [
-        "Sapthaa Records"
-    ],
+    "distributors": "Amazon Prime Video",
+    "other companies": "Sapthaa Records",
     "plot": [
         "_Joji_ (qv), an engineering dropout and the youngest son of a rich family lives with his aspirations of becoming super wealthy. Driven by greed and blind ambition, he decides to execute his plans following an unexpected event in the family.",
         "_Joji_ (qv), an engineering dropout and the youngest son of the rich plantation family lives with his aspirations of becoming a super wealthy NRI. But his father looks down on him as a proper loser. Driven by greed and blind ambition, _Joji_ (qv) finally decide to execute his plans following an unexpected event in the family. Will he succeed in achieving his dreams?"

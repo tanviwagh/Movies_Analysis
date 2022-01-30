@@ -29,24 +29,12 @@
         "Comedy",
         "Romance"
     ],
-    "runtimes": [
-        "140"
-    ],
-    "countries": [
-        "India"
-    ],
-    "country codes": [
-        "in"
-    ],
-    "language codes": [
-        "hi"
-    ],
-    "color info": [
-        "Color"
-    ],
-    "sound mix": [
-        "Dolby Digital"
-    ],
+    "runtimes": "140",
+    "countries": "India",
+    "country codes": "in",
+    "language codes": "hi",
+    "color info": "Color",
+    "sound mix": "Dolby Digital",
     "certificates": [
         "Argentina:13",
         "India:UA 13+",
@@ -61,14 +49,10 @@
     "cover url": "https://m.media-amazon.com/images/M/MV5BNDVlNGRlZDItMzkzMC00ODNmLTkyMTYtZWU3ODRhNzQ5ZDc0XkEyXkFqcGdeQXVyNTgyNTA4MjM@._V1_SX101_CR0,0,101,150_.jpg",
     "imdbID": "13529034",
     "plot outline": "A young couple Meenakshi and Sundareshwar, enter into an arranged marriage because their first names together make Madurai's famous temple 'Meenakshi Sundareshwar'. However, when a job opportunity exclusively for single men pops up in Bengaluru, Sundareshwar has to leave his hometown and his wife Meenakshi, and pretend to be unmarried. The newlywed couple who barely know each other, struggle with the trials, tribulations, and insecurities of a long-distance relationship.",
-    "languages": [
-        "Hindi"
-    ],
+    "languages": "Hindi",
     "title": "Meenakshi Sundareshwar",
     "kind": "movie",
-    "directors": [
-        "Vivek Soni"
-    ],
+    "directors": "Vivek Soni",
     "writers": [
         "Vivek Soni",
         "",
@@ -82,30 +66,18 @@
         "Anand Raichura",
         "Anshuman Singh"
     ],
-    "composers": [
-        "Justin Prabhakaran"
-    ],
-    "cinematographers": [
-        "Debojeet Ray"
-    ],
-    "editors": [
-        "Prashanth Ramachandran"
-    ],
+    "composers": "Justin Prabhakaran",
+    "cinematographers": "Debojeet Ray",
+    "editors": "Prashanth Ramachandran",
     "editorial department": [
         "Tushar Desai",
         "Pratik Kothari",
         "Swaroopa Sanap",
         "A.S. Sujith"
     ],
-    "casting directors": [
-        "Taran Bajaj"
-    ],
-    "production designers": [
-        "Aparna Sud"
-    ],
-    "art directors": [
-        "Priti Gole"
-    ],
+    "casting directors": "Taran Bajaj",
+    "production designers": "Aparna Sud",
+    "art directors": "Priti Gole",
     "make up department": [
         "Sanaya Dotiwala",
         "Manish Joshi",
@@ -158,9 +130,7 @@
         "Shashi Bhushan",
         "Rk Prajapati"
     ],
-    "costume departmen": [
-        "Shubham Chitoda"
-    ],
+    "costume departmen": "Shubham Chitoda",
     "location management": [
         "Tanveer Sajan",
         "Tabrez Shaikh"
@@ -169,9 +139,7 @@
         "Justin Prabhakaran",
         "Raj Shekhar"
     ],
-    "script department": [
-        "Sahil Dua"
-    ],
+    "script department": "Sahil Dua",
     "miscellaneous": [
         "Jahan Singh Bakshi",
         "Ram Solanki"
@@ -187,12 +155,8 @@
         "Vivek Soni",
         "Aarsh Vora"
     ],
-    "director": [
-        "Vivek Soni"
-    ],
-    "production companies": [
-        "Dharmatic Entertainment"
-    ],
+    "director": "Vivek Soni",
+    "production companies": "Dharmatic Entertainment",
     "distributors": [
         "Netflix",
         "Netflix",
