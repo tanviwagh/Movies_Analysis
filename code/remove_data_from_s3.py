@@ -20,12 +20,26 @@ if __name__ == '__main__':
 
     folder_name = config_data['data']['folder_name']
     
+    
     s3_client = connect_to_aws_service('s3', access_key, secret_key, region_name)
 
-    json_files = glob.glob('../data/*.json')
-
-    for filename in json_files:
-        key = "%s/%s" % (folder_name, os.path.basename(filename))
+    for obj_list in s3_client.list_objects(Bucket=bucket_name)['Contents']:
+        key = obj_list['Key']
+        print(key)
         delete_data_from_bucket(bucket_name, key)
+
+
+
+    # for subdir in os.listdir('../' + folder_name):
+    #     sub_folder_name = '/' + subdir 
+       
+
+    #     json_files = glob.glob('../' + folder_name + sub_folder_name + '/*.json')
+
+    #     for filename in json_files:
+    #         key = "%s/%s" % (folder_name + sub_folder_name, os.path.basename(filename))
+           
+    #         print(key)
+    #         #delete_data_from_bucket(bucket_name, key)
  
-    delete_bucket(bucket_name)
+    delete_bucket(bucket_name) # not tested

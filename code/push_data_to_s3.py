@@ -35,5 +35,3 @@ if __name__ == '__main__':
             key = "%s/%s" % (folder_name + sub_folder_name, os.path.basename(filename))
             print(key)
             push_to_s3_bucket('../' + key ,buck_name, key)
-    
-    
