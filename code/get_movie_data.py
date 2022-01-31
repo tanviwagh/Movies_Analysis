@@ -129,7 +129,7 @@ if __name__ == '__main__':
 
     imdb_obj = IMDb()
     # loop through years
-    for year in range(2001,2002):
+    for year in range(2009,2012):
         names = get_names_from_wiki(year)
         print(len(names))
 

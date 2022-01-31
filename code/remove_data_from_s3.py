@@ -27,19 +27,5 @@ if __name__ == '__main__':
         key = obj_list['Key']
         print(key)
         delete_data_from_bucket(bucket_name, key)
-
-
-
-    # for subdir in os.listdir('../' + folder_name):
-    #     sub_folder_name = '/' + subdir 
-       
-
-    #     json_files = glob.glob('../' + folder_name + sub_folder_name + '/*.json')
-
-    #     for filename in json_files:
-    #         key = "%s/%s" % (folder_name + sub_folder_name, os.path.basename(filename))
-           
-    #         print(key)
-    #         #delete_data_from_bucket(bucket_name, key)
  
-    delete_bucket(bucket_name) # not tested
+    delete_bucket(bucket_name) 
