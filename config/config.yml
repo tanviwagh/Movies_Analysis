@@ -1,7 +1,7 @@
 
 aws_credentials:
-    access_key: ''
-    secret_key: ''
+    access_key: 'AKIAV4LZZODFWG4BM7WL'
+    secret_key: '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'
 
 s3_bucket_details:
     region_name: 'us-east-1'
@@ -9,4 +9,11 @@ s3_bucket_details:
 
 data:
     folder_name: data
+
+dynamodb_table_details:
+    region_name: 'us-east-1'
+    table_name: 'movie-analysis-table'
+    partition_key: 'localized title'
+    sort_key: 'id'
+
   

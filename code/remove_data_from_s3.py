@@ -1,4 +1,4 @@
-from utils import connect_to_aws_service, load_config
+from utils import connect_to_aws_service_client, load_config
 import glob
 import os 
 
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     folder_name = config_data['data']['folder_name']
     
     
-    s3_client = connect_to_aws_service('s3', access_key, secret_key, region_name)
+    s3_client = connect_to_aws_service_client('s3', access_key, secret_key, region_name)
 
     for obj_list in s3_client.list_objects(Bucket=bucket_name)['Contents']:
         key = obj_list['Key']
