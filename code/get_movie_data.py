@@ -45,20 +45,25 @@ def find_unknown_id_movies(names):
     #imdb_obj = IMDb()
 
     for movie in names:
-        search = imdb_obj.search_movie(movie)
+        try:
+            search = imdb_obj.search_movie(movie)
 
-        if not search: 
-            ids.append('0')
-            #print("ID not found")
+            if not search: 
+                ids.append('0')
+                #print("ID not found")
 
-        elif search[0]['title'].lower() == movie.lower():
-            id = search[0].getID()
-            ids.append(id)
-            #print("ID is found")
+            elif search[0]['title'].lower() == movie.lower():
+                id = search[0].getID()
+                ids.append(id)
+                #print("ID is found")
 
-        else:
-            ids.append('0')
-            #print("ID not found")
+            else:
+                ids.append('0')
+                #print("ID not found")
+
+        except IMDbDataAccessError:
+            print("error")
+
 
     return ids
 
@@ -129,7 +134,7 @@ if __name__ == '__main__':
 
     imdb_obj = IMDb()
     # loop through years
-    for year in range(2009,2012):
+    for year in range(2016,2017):
         names = get_names_from_wiki(year)
         print(len(names))
 
