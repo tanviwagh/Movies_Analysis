@@ -13,7 +13,7 @@ data:
 dynamodb_table_details:
     region_name: 'us-east-1'
     table_name: 'movie-analysis-table'
-    partition_key: 'localized title'
-    sort_key: 'id'
+    partition_key: 'id'
+    sort_key: 'localized title'
 
   
