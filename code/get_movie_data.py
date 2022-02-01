@@ -62,8 +62,7 @@ def find_unknown_id_movies(names):
                 #print("ID not found")
 
         except IMDbDataAccessError:
-            print("error")
-
+            print("Operation timed out")
 
     return ids
 
@@ -114,11 +113,10 @@ def store_to_json(movie_dict, year):
                                 dict[attr] = element_list
                             
                 except KeyError:
-                        #print(f"{attr} is unknown")
-                        pass
+                        print(f"{attr} is unknown")
 
         except IMDbDataAccessError:
-            print("error")
+            print("Operation timed out")
 
         file_name = '../data/' + str(year) + '/' + str(id) + '.json'  
         
@@ -134,7 +132,7 @@ if __name__ == '__main__':
 
     imdb_obj = IMDb()
     # loop through years
-    for year in range(2016,2017):
+    for year in range(2017,2019):
         names = get_names_from_wiki(year)
         print(len(names))
 
