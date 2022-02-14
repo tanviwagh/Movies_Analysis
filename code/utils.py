@@ -1,12 +1,14 @@
 import boto3
 import yaml
 from yaml.loader import SafeLoader
+from pyspark.sql import SparkSession
 
 def load_config():
     with open('../config/config.yml') as file:
         config_data = yaml.load(file, Loader=SafeLoader)
 
     return config_data
+
 
 def connect_to_aws_service_client(service_name, access_key, secret_key, region_name):
     aws_client = boto3.client(service_name, 
@@ -16,6 +18,7 @@ def connect_to_aws_service_client(service_name, access_key, secret_key, region_n
 
     return aws_client
 
+
 def connect_to_aws_service_resource(service_name, access_key, secret_key, region_name):
     aws_resource = boto3.resource(service_name, 
                  region_name=region_name,
@@ -23,3 +26,13 @@ def connect_to_aws_service_resource(service_name, access_key, secret_key, region
                  aws_secret_access_key=secret_key)
 
     return aws_resource
+
+
+def create_spark_session(app_name):
+    spark = SparkSession.builder \
+            .master("local") \
+            .appName(app_name) \
+            .getOrCreate()
+
+    return spark 
+
