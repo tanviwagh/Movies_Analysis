@@ -18,7 +18,7 @@ if __name__ == '__main__':
     region_name = config_data['s3_bucket_details']['region_name']
     bucket_name = config_data['s3_bucket_details']['bucket_name']
 
-    folder_name = config_data['data']['folder_name']
+    folder_name = config_data['data']['data_folder_name']
     
     
     s3_client = connect_to_aws_service_client('s3', access_key, secret_key, region_name)

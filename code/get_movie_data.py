@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
     config_data = load_config() 
 
-    folder_name = config_data['data']['folder_name']
+    folder_name = config_data['data']['data_folder_name']
 
     imdb_obj = IMDb()
     # loop through years
