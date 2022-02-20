@@ -1,5 +1,5 @@
 from utils import create_spark_session, load_config
-from pyspark.sql.functions import col, regexp_extract, regexp_replace, explode, split
+from pyspark.sql.functions import col, regexp_extract, regexp_replace, explode, split, udf
 import os 
 
 APP_NAME = "data_cleaning"
@@ -11,7 +11,7 @@ def read_json(folder_name, dir):
     return dataframe 
 
 
-def clear_bracket_cols(dataframe):
+def clean_date_column(dataframe):
     cols = [col('imdbID'), col('localized title'), col('languages'), col('runtimes'), col('original_air_date'),
         col('original_air_date_country'), col('plot')]
 
@@ -20,6 +20,20 @@ def clear_bracket_cols(dataframe):
     result_dataframe = temp_dataframe.withColumn("original_air_date", regexp_replace('original air date', r'\([^)]*\)', "")).select(*cols)
 
     final_dataframe = result_dataframe.withColumn("original_air_date_country", regexp_replace('original_air_date_country', r'\)|\(', "")).select(*cols)
+
+    return final_dataframe
+
+
+def convert_list_column(dataframe):
+    join_udf = udf(lambda x: ",".join(x))
+    join_dataframe = dataframe.withColumn("plot", join_udf(col("plot")))
+
+    split_udf = udf(lambda x: x.split(',')[0])
+    split_dataframe = join_dataframe.withColumn("languages", split_udf(col("languages")))
+
+    result_dataframe = split_dataframe.withColumn("plot", regexp_replace('plot', r'\]|\[', ""))
+
+    final_dataframe = result_dataframe.withColumn("languages", regexp_replace('languages', r'\]|\[', ""))
 
     return final_dataframe
 
@@ -48,8 +62,11 @@ def explode_array_columns(dataframe, col_name):
                          select(col('imdbID'), col('cast'), col('music department'), 
                                 col('genres'), col('directors'), col('writers'), 
                                 col('producers')).withColumnRenamed('col', col_name)
+
+    exploded_dataframe = exploded_dataframe.withColumn(col_name, regexp_replace(col_name, r'\]|\[', ""))
     
     return exploded_dataframe
+
 
 
 if __name__=="__main__":
@@ -67,8 +84,17 @@ if __name__=="__main__":
     for dir in all_dirs:
         input_df = read_json(data_folder_name, dir)
 
-        formatted_df = clear_bracket_cols(input_df)
+        formatted_df = clean_date_column(input_df)
 
+        formatted_df = convert_list_column(formatted_df)
+
+        output_path = '../' + parquet_folder_name + '/' + dir + '/' + "movie"
+
+        if not os.path.exists(output_path):
+                os.makedirs(output_path)
+
+        save_to_parquet(formatted_df, output_path)
+            
         base_df = formatted_df
 
         cols_list = ['cast','music department', 'genres','directors', 'writers', 'producers']
@@ -84,11 +110,29 @@ if __name__=="__main__":
             d_type = dict(converted_df.dtypes)[col_name]
             if d_type == 'array<string>':
                 converted_df = explode_array_columns(converted_df, col_name)   
+            
+        idx = 0
 
-        # need to filter data according to tables 
-        
-        output_path = '../' + parquet_folder_name + '/' + dir 
+        cast_df = converted_df.select(col('imdbID'), col(cols_list[idx]))
+        music_df = converted_df.select(col('imdbID'), col(cols_list[idx+1]))
+        genre_df = converted_df.select(col('imdbID'), col(cols_list[idx+2]))
+        director_df = converted_df.select(col('imdbID'), col(cols_list[idx+3]))
+        writer_df = converted_df.select(col('imdbID'), col(cols_list[idx+4]))
+        producer_df = converted_df.select(col('imdbID'), col(cols_list[idx+5]))
 
-        save_to_parquet(converted_df, output_path)
+        unique_cast_df = remove_duplicates(cast_df)
+        unique_music_df = remove_duplicates(music_df)
+        unique_genre_df = remove_duplicates(genre_df)
+        unique_director_df = remove_duplicates(director_df)
+        unique_writer_df = remove_duplicates(writer_df)
+        unique_producer_df = remove_duplicates(producer_df)
+
+        for col_name in cols_list:
+            output_path = '../' + parquet_folder_name + '/' + dir + '/' + col_name
+
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+
+            save_to_parquet(converted_df, output_path)
             
 
