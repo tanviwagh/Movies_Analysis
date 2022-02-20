@@ -5,23 +5,25 @@ import os
 APP_NAME = "data_cleaning"
 
 
-def read_json(folder_name, dir):
+def read_json(folder_name, dir, emr_path ):
     #dataframe = spark.read.option("multiline","true").json("../" + folder_name + "/" + dir + "/*.json")
-    dataframe = spark.read.option("multiline","true").json("file:////home/hadoop/Movies_Analysis/" + folder_name + "/" + dir + "/*.json")
+    dataframe = spark.read.option("multiline","true").json("file://" + emr_path  + folder_name + "/" + dir + "/*.json")
     
-    cols = [col('imdbID'), col('localized title'), col('languages'), col('runtimes'), col('original air date'),
-         col('plot'), col('cast'), col('music department'), col('genres'),
-       col('directors'), col('writers'), col('producers')]
+    cols = [ col('imdbID'), col('localized title'), col('languages'), col('runtimes'), col('original air date'),
+            col('plot'), col('cast'), col('music department'), col('genres'),
+            col('directors'), col('writers'), col('producers') ]
 
     dataframe = dataframe.select(*cols)
+
     dataframe = dataframe.withColumnRenamed("localized title", "localized_title")
     dataframe = dataframe.withColumnRenamed("music department", "music_department")
+
     return dataframe 
 
 
 def clean_date_column(dataframe):
     cols = [col('imdbID'), col('localized_title'), col('languages'), col('runtimes'), col('original_air_date'),
-        col('original_air_date_country'), col('plot')]
+            col('original_air_date_country'), col('plot')]
 
     temp_dataframe = dataframe.withColumn("original_air_date_country", regexp_extract('original air date', r'\([^)]*\)', 0))
 
@@ -36,11 +38,13 @@ def convert_list_column(dataframe):
     if dict(dataframe.dtypes)["plot"] != "string":
         join_udf = udf(lambda x: ",".join(x))
         join_dataframe = dataframe.withColumn("plot", join_udf(col("plot")))
+        
         final_dataframe = join_dataframe.withColumn("plot", regexp_replace('plot', r'\]|\[', ""))
 
     else:
         join_dataframe = dataframe
         split_udf = udf(lambda x: x.split(',')[0])
+
         split_dataframe = join_dataframe.withColumn("languages", split_udf(col("languages")))
 
         final_dataframe = split_dataframe.withColumn("languages", regexp_replace('languages', r'\]|\[', ""))
@@ -90,6 +94,8 @@ if __name__=="__main__":
 
     parquet_folder_name = config_data['data']['parquet_folder_name']
 
+    emr_path = config_data['paths']['emr_path']
+
     all_dirs = os.listdir('../' + data_folder_name)
 
     for dir in all_dirs:
@@ -99,7 +105,7 @@ if __name__=="__main__":
 
         formatted_df = convert_list_column(formatted_df)
 
-        output_path = "file:////home/hadoop/Movies_Analysis/" + parquet_folder_name + '/' + dir + '/' + "movie"
+        output_path = "file://" + emr_path + parquet_folder_name + '/' + dir + '/' + "movie"
 
         if not os.path.exists(output_path):
             os.makedirs(output_path)
@@ -142,7 +148,7 @@ if __name__=="__main__":
 
         for col_name in cols_list:
             #output_path = '../' + parquet_folder_name + '/' + dir + '/' + col_name
-            output_path = "file:////home/hadoop/Movies_Analysis/" + parquet_folder_name + '/' + dir + '/' + col_name
+            output_path = "file://" + emr_path + parquet_folder_name + '/' + dir + '/' + col_name
 
             if not os.path.exists(output_path):
                 os.makedirs(output_path)

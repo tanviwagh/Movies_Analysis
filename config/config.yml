@@ -17,4 +17,7 @@ dynamodb_table_details:
     partition_key: 'id'
     sort_key: 'localized title'
 
+paths:
+    emr_path: '/home/hadoop/Movies_Analysis/'
+
   
