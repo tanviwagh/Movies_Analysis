@@ -99,7 +99,7 @@ if __name__=="__main__":
     all_dirs = os.listdir('../' + data_folder_name)
 
     for dir in all_dirs:
-        input_df = read_json(data_folder_name, dir)
+        input_df = read_json(data_folder_name, dir, emr_path)
 
         formatted_df = clean_date_column(input_df)
 
