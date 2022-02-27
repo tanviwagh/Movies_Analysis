@@ -105,7 +105,7 @@ if __name__=="__main__":
 
         formatted_df = convert_list_column(formatted_df)
 
-        output_path = "file://" + emr_path + parquet_folder_name + '/' + dir + '/' + "movie"
+        output_path = "file://" + emr_path + parquet_folder_name + '/'  + "movie"
 
         if not os.path.exists(output_path):
             os.makedirs(output_path)
@@ -148,7 +148,7 @@ if __name__=="__main__":
 
         for col_name in cols_list:
             #output_path = '../' + parquet_folder_name + '/' + dir + '/' + col_name
-            output_path = "file://" + emr_path + parquet_folder_name + '/' + dir + '/' + col_name
+            output_path = "file://" + emr_path + parquet_folder_name  + '/' + col_name
 
             if not os.path.exists(output_path):
                 os.makedirs(output_path)

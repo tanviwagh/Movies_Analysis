@@ -26,7 +26,7 @@ if __name__ == '__main__':
     region_name = config_data['s3_bucket_details']['region_name']
     buck_name = config_data['s3_bucket_details']['bucket_name']
 
-    folder_name = config_data['data']['data_folder_name']
+    folder_name = config_data['data']['parquet_folder_name']
     
     s3_client = connect_to_aws_service_client('s3', access_key, secret_key, region_name)
 
@@ -37,7 +37,7 @@ if __name__ == '__main__':
             sub_folder_name = '/' + subdir 
             #print(sub_folder_name)
 
-            json_files = glob.glob('../' + folder_name + sub_folder_name + '/*.json')
+            json_files = glob.glob('../' + folder_name + sub_folder_name + '/*.parquet')
             #print(json_files)
 
             for filename in json_files:
