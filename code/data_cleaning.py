@@ -53,12 +53,6 @@ def convert_list_column(dataframe):
 
 
 
-def remove_duplicates(dataframe):
-    unique_dataframe = dataframe.dropDuplicates()
-
-    return unique_dataframe
-
-
 def save_to_parquet(dataframe, parquet_path):
     dataframe.write.parquet(parquet_path)
     
@@ -83,7 +77,6 @@ def explode_array_columns(dataframe, col_name):
     return exploded_dataframe
 
 
-
 if __name__=="__main__":
 
     spark = create_spark_session(APP_NAME)
@@ -105,6 +98,8 @@ if __name__=="__main__":
 
         formatted_df = convert_list_column(formatted_df)
 
+        unique_movie_df = formatted_df.dropDuplicates()
+
         output_path = "file://" + emr_path + parquet_folder_name + '/'  + "movie"
 
         if not os.path.exists(output_path):
@@ -112,11 +107,11 @@ if __name__=="__main__":
         else:
             print("Path exits")
         
-        save_to_parquet(formatted_df, output_path)
+        save_to_parquet(unique_movie_df, output_path)
             
         base_df = input_df
 
-        cols_list = ['cast','music_department', 'genres','directors', 'writers', 'producers']
+        cols_list = ['movie_cast','music_department', 'genres','directors', 'writers', 'producers']
 
         for col_name in cols_list:
             d_type = dict(base_df.dtypes)[col_name]
@@ -132,19 +127,13 @@ if __name__=="__main__":
             
         idx = 0
 
-        cast_df = converted_df.select(col('imdbID'), col(cols_list[idx]))
-        music_df = converted_df.select(col('imdbID'), col(cols_list[idx+1]))
-        genre_df = converted_df.select(col('imdbID'), col(cols_list[idx+2]))
-        director_df = converted_df.select(col('imdbID'), col(cols_list[idx+3]))
-        writer_df = converted_df.select(col('imdbID'), col(cols_list[idx+4]))
-        producer_df = converted_df.select(col('imdbID'), col(cols_list[idx+5]))
+        movie_cast_df = converted_df.select(col('imdbID'), col(cols_list[idx])).dropDuplicates()
+        music_department_df = converted_df.select(col('imdbID'), col(cols_list[idx+1])).dropDuplicates()
+        genres_df = converted_df.select(col('imdbID'), col(cols_list[idx+2])).dropDuplicates()
+        directors_df = converted_df.select(col('imdbID'), col(cols_list[idx+3])).dropDuplicates()
+        writers_df = converted_df.select(col('imdbID'), col(cols_list[idx+4])).dropDuplicates()
+        producers_df = converted_df.select(col('imdbID'), col(cols_list[idx+5])).dropDuplicates()
 
-        unique_cast_df = remove_duplicates(cast_df)
-        unique_music_df = remove_duplicates(music_df)
-        unique_genre_df = remove_duplicates(genre_df)
-        unique_director_df = remove_duplicates(director_df)
-        unique_writer_df = remove_duplicates(writer_df)
-        unique_producer_df = remove_duplicates(producer_df)
 
         for col_name in cols_list:
             #output_path = '../' + parquet_folder_name + '/' + dir + '/' + col_name

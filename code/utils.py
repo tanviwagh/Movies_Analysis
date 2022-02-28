@@ -32,7 +32,7 @@ def create_spark_session(app_name):
     spark = SparkSession.builder \
             .master("local") \
             .appName(app_name) \
+            .enableHiveSupport() \
             .getOrCreate()
 
     return spark 
-

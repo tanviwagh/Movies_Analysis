@@ -20,4 +20,21 @@ dynamodb_table_details:
 paths:
     emr_path: '/home/hadoop/Movies_Analysis/'
 
+athena:
+    db_name: 'test'
+    movie_tbl_name: 'movie'
+    movie_s3_loc: 's3://movie-analysis-bucket/parquet/movie/'
+    genre_tbl_name: 'genre'
+    genre_s3_loc: 's3://movie-analysis-bucket/parquet/genre/'
+    artist_tbl_name: 'artist'
+    artist_s3_loc: 's3://movie-analysis-bucket/parquet/artist/'
+    music_tbl_name: 'music'
+    music_s3_loc: 's3://movie-analysis-bucket/parquet/music/'
+    director_tbl_name: 'director'
+    director_s3_loc: 's3://movie-analysis-bucket/parquet/director/'
+    producer_tbl_name: 'producer'
+    producer_s3_loc: 's3://movie-analysis-bucket/parquet/producer/'
+    writer_tbl_name: 'writer'
+    writer_s3_loc: 's3://movie-analysis-bucket/parquet/writer/'
+
   
