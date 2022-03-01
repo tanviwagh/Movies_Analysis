@@ -1,5 +1,6 @@
 from utils import create_spark_session, load_config
 from pyspark.sql.functions import col, regexp_extract, regexp_replace, explode, split, udf
+from pyspark.sql.types import DoubleType, DateType
 import os 
 
 APP_NAME = "data_cleaning"
@@ -36,25 +37,33 @@ def clean_date_column(dataframe):
 
 
 def convert_list_column(dataframe):
-    if dict(dataframe.dtypes)["plot"] != "string":
-        join_udf = udf(lambda x: ",".join(x))
-        join_dataframe = dataframe.withColumn("plot", join_udf(col("plot")))
+    split_udf = udf(lambda x: x.split(',')[0])    
+
+    split_dataframe = dataframe.withColumn("languages", split_udf(col("languages")))
+
+    temp_dataframe = split_dataframe.withColumn("languages", regexp_replace('languages', r'\]|\[', ""))
         
-        final_dataframe = join_dataframe.withColumn("plot", regexp_replace('plot', r'\]|\[', ""))
-##############33
+    if dict(temp_dataframe.dtypes)["plot"] != "string":
+        join_udf = udf(lambda x: ",".join(x))
+        final_dataframe = temp_dataframe.withColumn("plot", join_udf(col("plot")))
+        
     else:
-        join_dataframe = dataframe
-        split_udf = udf(lambda x: x.split(',')[0])
-
-        split_dataframe = join_dataframe.withColumn("languages", split_udf(col("languages")))
-
-        final_dataframe = split_dataframe.withColumn("languages", regexp_replace('languages', r'\]|\[', ""))
+        final_dataframe = dataframe
+        
+    final_dataframe = final_dataframe.withColumn("plot", regexp_replace('plot', r'\]|\[', ""))
+        
+    final_dataframe = final_dataframe.withColumn("imdbID",final_dataframe.imdbID.cast(DoubleType()))
+    final_dataframe = final_dataframe.withColumn("runtimes",final_dataframe.runtimes.cast(DoubleType()))
+    final_dataframe = final_dataframe.withColumn("original_air_date",final_dataframe.original_air_date.cast(DateType()))
 
     return final_dataframe
 
 
 
 def save_to_parquet(dataframe, parquet_path):
+    if not os.path.exists(parquet_path):
+        os.makedirs(parquet_path)
+
     dataframe.write.mode('append').parquet(parquet_path)
     
 
@@ -98,18 +107,7 @@ if __name__=="__main__":
         formatted_df = clean_date_column(input_df)
 
         formatted_df = convert_list_column(formatted_df)
-
-        unique_movie_df = formatted_df.dropDuplicates()
-
-        output_path = "file://" + emr_path + parquet_folder_name + '/'  + "movie"
-
-        if not os.path.exists(output_path):
-            os.makedirs(output_path)
-        else:
-            print("Path exits")
-        
-        save_to_parquet(unique_movie_df, output_path)
-            
+     
         base_df = input_df
 
         cols_list = ['movie_cast','music_department', 'genres','directors', 'writers', 'producers']
@@ -128,6 +126,8 @@ if __name__=="__main__":
             
         idx = 0
 
+        unique_movie_df = formatted_df.dropDuplicates()
+
         movie_cast_df = converted_df.select(col('imdbID'), col(cols_list[idx])).dropDuplicates()
         music_department_df = converted_df.select(col('imdbID'), col(cols_list[idx+1])).dropDuplicates()
         genres_df = converted_df.select(col('imdbID'), col(cols_list[idx+2])).dropDuplicates()
@@ -136,13 +136,26 @@ if __name__=="__main__":
         producers_df = converted_df.select(col('imdbID'), col(cols_list[idx+5])).dropDuplicates()
 
 
-        for col_name in cols_list:
-            #output_path = '../' + parquet_folder_name + '/' + dir + '/' + col_name
-            output_path = "file://" + emr_path + parquet_folder_name  + '/' + col_name
+        output_path = "file://" + emr_path + parquet_folder_name + '/'  + "movie"
+        save_to_parquet(unique_movie_df, output_path)
 
-            if not os.path.exists(output_path):
-                os.makedirs(output_path)
+        output_path = parquet_folder_name + '/' + cols_list[idx]
+        save_to_parquet(movie_cast_df, output_path)
+        
+        output_path = parquet_folder_name + '/' + cols_list[idx+1]
+        save_to_parquet(music_department_df, output_path)
+        
+        output_path = parquet_folder_name + '/' + cols_list[idx+2]
+        save_to_parquet(genres_df, output_path)
+        
+        output_path = parquet_folder_name + '/' + cols_list[idx+3]
+        save_to_parquet(directors_df, output_path)
+        
+        output_path = parquet_folder_name + '/' + cols_list[idx+4]
+        save_to_parquet(writers_df, output_path)
+        
+        output_path = parquet_folder_name + '/' + cols_list[idx+5]
+        save_to_parquet(producers_df, output_path)
 
-            save_to_parquet(converted_df, output_path)
             
 
