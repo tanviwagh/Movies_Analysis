@@ -139,22 +139,22 @@ if __name__=="__main__":
         output_path = "file://" + emr_path + parquet_folder_name + '/'  + "movie"
         save_to_parquet(unique_movie_df, output_path)
 
-        output_path = parquet_folder_name + '/' + cols_list[idx]
+        output_path = "file://" + emr_path + parquet_folder_name + '/' + cols_list[idx]
         save_to_parquet(movie_cast_df, output_path)
         
-        output_path = parquet_folder_name + '/' + cols_list[idx+1]
+        output_path = "file://" + emr_path + parquet_folder_name + '/' + cols_list[idx+1]
         save_to_parquet(music_department_df, output_path)
         
-        output_path = parquet_folder_name + '/' + cols_list[idx+2]
+        output_path = "file://" + emr_path + parquet_folder_name + '/' + cols_list[idx+2]
         save_to_parquet(genres_df, output_path)
         
-        output_path = parquet_folder_name + '/' + cols_list[idx+3]
+        output_path = "file://" + emr_path + parquet_folder_name + '/' + cols_list[idx+3]
         save_to_parquet(directors_df, output_path)
         
-        output_path = parquet_folder_name + '/' + cols_list[idx+4]
+        output_path = "file://" + emr_path + parquet_folder_name + '/' + cols_list[idx+4]
         save_to_parquet(writers_df, output_path)
         
-        output_path = parquet_folder_name + '/' + cols_list[idx+5]
+        output_path = "file://" + emr_path + parquet_folder_name + '/' + cols_list[idx+5]
         save_to_parquet(producers_df, output_path)
 
             
