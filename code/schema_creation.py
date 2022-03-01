@@ -2,6 +2,13 @@ from utils import create_spark_session, load_config
 
 APP_NAME = "schema_creation"
 
+def create_db(spark, db_name):
+    SQL = """
+        CREATE DATABASE {db_name}
+        """.format(db_name=db_name)
+
+    spark.sql(SQL)
+
 def create_movie_table(spark, db_name, tbl_name, s3_loc):
     SQL = """
         CREATE EXTERNAL TABLE {db_name}.{tbl_name}
@@ -138,6 +145,7 @@ if __name__=="__main__":
     writer_tbl_name = config_data['athena']['writer_tbl_name']
     writer_s3_loc = config_data['athena']['writer_s3_loc']
 
+    create_db(spark, db_name)
     create_movie_table(spark, db_name, movie_tbl_name, movie_s3_loc)
     create_genre_table(spark, db_name, genre_tbl_name, genre_s3_loc)
     create_artist_table(spark, db_name, artist_tbl_name, artist_s3_loc)

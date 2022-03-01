@@ -17,6 +17,7 @@ def read_json(folder_name, dir, emr_path ):
 
     dataframe = dataframe.withColumnRenamed("localized title", "localized_title")
     dataframe = dataframe.withColumnRenamed("music department", "music_department")
+    dataframe = dataframe.withColumnRenamed("cast", "movie_cast")
 
     return dataframe 
 
@@ -40,7 +41,7 @@ def convert_list_column(dataframe):
         join_dataframe = dataframe.withColumn("plot", join_udf(col("plot")))
         
         final_dataframe = join_dataframe.withColumn("plot", regexp_replace('plot', r'\]|\[', ""))
-
+##############33
     else:
         join_dataframe = dataframe
         split_udf = udf(lambda x: x.split(',')[0])
@@ -54,12 +55,12 @@ def convert_list_column(dataframe):
 
 
 def save_to_parquet(dataframe, parquet_path):
-    dataframe.write.parquet(parquet_path)
+    dataframe.write.mode('append').parquet(parquet_path)
     
 
 def convert_to_array_type(dataframe, col_name):
     array_dataframe = dataframe.withColumn(col_name, split(dataframe[col_name],",")).\
-                      select(col('imdbID'), col('cast'), col('music_department'), 
+                      select(col('imdbID'), col('movie_cast'), col('music_department'), 
                                 col('genres'), col('directors'), col('writers'), 
                                 col('producers')).withColumnRenamed('col', col_name)
     
@@ -68,7 +69,7 @@ def convert_to_array_type(dataframe, col_name):
 
 def explode_array_columns(dataframe, col_name):
     exploded_dataframe = dataframe.withColumn(col_name, explode(dataframe[col_name])).\
-                         select(col('imdbID'), col('cast'), col('music_department'), 
+                         select(col('imdbID'), col('movie_cast'), col('music_department'), 
                                 col('genres'), col('directors'), col('writers'), 
                                 col('producers')).withColumnRenamed('col', col_name)
 
