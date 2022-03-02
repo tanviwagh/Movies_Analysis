@@ -5,7 +5,9 @@ import re
 import json
 import os
 from imdb import IMDb, IMDbDataAccessError
-from utils import load_config
+from utils import load_config, create_spark_session
+
+APP_NAME= "get_movie_data"
 
 def get_names_from_wiki(year):
 
@@ -125,6 +127,7 @@ def store_to_json(movie_dict, year):
         
 
 if __name__ == '__main__':
+    spark = create_spark_session(APP_NAME)
 
     config_data = load_config() 
 

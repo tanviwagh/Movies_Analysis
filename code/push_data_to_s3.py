@@ -1,6 +1,8 @@
-from utils import connect_to_aws_service_client, load_config
+from utils import connect_to_aws_service_client, load_config, create_spark_session
 import glob
 import os 
+
+APP_NAME = "push_data_to_s3"
 
 def create_bucket(buck_name):
     s3_client.create_bucket(Bucket=buck_name)
@@ -17,7 +19,8 @@ def push_to_s3_bucket(file, buck_name, key):
     s3_client.upload_file(Filename=file, Bucket=buck_name, Key=key)
 
 if __name__ == '__main__':
-
+    spark = create_spark_session(APP_NAME)
+    
     config_data = load_config() 
 
     access_key = config_data['aws_credentials']['access_key']

@@ -1,6 +1,8 @@
-from utils import connect_to_aws_service_client, load_config
+from utils import connect_to_aws_service_client, load_config, create_spark_session
 import glob
 import os 
+
+APP_NAME = "remove_data_from_s3"
 
 def delete_bucket(bucket_name):
     s3_client.delete_bucket(Bucket=bucket_name)
@@ -9,6 +11,7 @@ def delete_data_from_bucket(bucket_name, key):
     s3_client.delete_object(Bucket=bucket_name, Key=key)
 
 if __name__ == '__main__':
+    spark = create_spark_session(APP_NAME)
 
     config_data = load_config() 
 

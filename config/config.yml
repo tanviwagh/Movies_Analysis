@@ -36,5 +36,3 @@ athena:
     producer_s3_loc: 's3://movie-analysis-bucket/parquet/producers/'
     writer_tbl_name: 'writer'
     writer_s3_loc: 's3://movie-analysis-bucket/parquet/writers/'
-
-  

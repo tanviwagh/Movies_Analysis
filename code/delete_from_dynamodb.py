@@ -1,12 +1,14 @@
-from utils import connect_to_aws_service_client, load_config
+from utils import connect_to_aws_service_client, load_config, create_spark_session
 import glob
 import os 
+
+APP_NAME = "delete_from_dynamodb"
 
 def delete_dynamodb_table(table_name):
     response = dynamodb_client.delete_table(TableName='movie-analysis-table')
 
 if __name__ == '__main__':
-
+    spark = create_spark_session(APP_NAME)
     config_data = load_config() 
 
     access_key = config_data['aws_credentials']['access_key']

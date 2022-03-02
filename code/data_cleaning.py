@@ -16,9 +16,19 @@ def read_json(folder_name, dir, emr_path ):
 
     dataframe = dataframe.select(*cols)
 
-    dataframe = dataframe.withColumnRenamed("localized title", "localized_title")
+    dataframe = dataframe.withColumnRenamed("localized title", "movie_title")
     dataframe = dataframe.withColumnRenamed("music department", "music_department")
     dataframe = dataframe.withColumnRenamed("cast", "movie_cast")
+    dataframe = dataframe.withColumnRenamed("original air date", "original_air_date")
+    
+    null_dict = {'imdbID': 0, 'movie_title': 'unknown', 'languages': 'unknown', 'runtimes': 0, 
+                'original_air_date': '2099-12-31', 'plot': 'unknown', 'movie_cast': 'unknown', 'music_department': 'unknown',
+                'genres': 'unknown', 'directors': 'unknown', 'writers': 'unknown', 'producers': 'unknown'}
+    
+    dataframe = dataframe.na.fill(null_dict)
+    dataframe = dataframe.withColumn("imdbID",dataframe.imdbID.cast(DoubleType()))
+    dataframe = dataframe.withColumn("runtimes",dataframe.runtimes.cast(DoubleType()))
+    dataframe = dataframe.withColumn("original_air_date",dataframe.original_air_date.cast(DateType()))
 
     return dataframe 
 
@@ -48,13 +58,9 @@ def convert_list_column(dataframe):
         final_dataframe = temp_dataframe.withColumn("plot", join_udf(col("plot")))
         
     else:
-        final_dataframe = dataframe
+        final_dataframe = temp_dataframe
         
     final_dataframe = final_dataframe.withColumn("plot", regexp_replace('plot', r'\]|\[', ""))
-        
-    final_dataframe = final_dataframe.withColumn("imdbID",final_dataframe.imdbID.cast(DoubleType()))
-    final_dataframe = final_dataframe.withColumn("runtimes",final_dataframe.runtimes.cast(DoubleType()))
-    final_dataframe = final_dataframe.withColumn("original_air_date",final_dataframe.original_air_date.cast(DateType()))
 
     return final_dataframe
 
@@ -86,6 +92,31 @@ def explode_array_columns(dataframe, col_name):
     
     return exploded_dataframe
 
+def remove_quotes(dataframe, movie_flag):
+    if movie_flag == True:
+        cols = [ col('imdbID'), col('localized_title'), col('languages'), col('runtimes'), col('original_air_date'),
+            col('original_air_date_country'), col('plot') ]
+
+        dataframe = dataframe.select(*cols)
+    
+        final_dataframe = dataframe.withColumn('languages', regexp_replace('languages', '"', ''))
+        final_dataframe = dataframe.withColumn('plot', regexp_replace('plot', '"', ''))
+        
+    else:
+        cols = [ col('imdbID'), col('movie_cast'), col('music_department'), col('genres'),
+            col('directors'), col('writers'), col('producers') ]
+
+        dataframe = dataframe.select(*cols)
+        
+        final_dataframe = dataframe.withColumn('movie_cast', regexp_replace('movie_cast', '"', ''))
+        final_dataframe = final_dataframe.withColumn('music_department', regexp_replace('music_department', '"', ''))
+        final_dataframe = final_dataframe.withColumn('genres', regexp_replace('genres', '"', ''))
+
+        final_dataframe = final_dataframe.withColumn('directors', regexp_replace('directors', '"', ''))  
+        final_dataframe = final_dataframe.withColumn('writers', regexp_replace('writers', '"', ''))  
+        final_dataframe = final_dataframe.withColumn('producers', regexp_replace('producers', '"', ''))  
+    
+    return final_dataframe
 
 if __name__=="__main__":
 
@@ -123,10 +154,14 @@ if __name__=="__main__":
             d_type = dict(converted_df.dtypes)[col_name]
             if d_type == 'array<string>':
                 converted_df = explode_array_columns(converted_df, col_name)   
-            
-        idx = 0
 
         unique_movie_df = formatted_df.dropDuplicates()
+
+        unique_movie_df = remove_quotes(unique_movie_df, True)
+        converted_df = remove_quotes(converted_df, False)
+
+        idx = 0
+
 
         movie_cast_df = converted_df.select(col('imdbID'), col(cols_list[idx])).dropDuplicates()
         music_department_df = converted_df.select(col('imdbID'), col(cols_list[idx+1])).dropDuplicates()
