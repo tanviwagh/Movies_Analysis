@@ -4,25 +4,29 @@ APP_NAME = "schema_creation"
 
 def create_db(spark, db_name):
     SQL = """
-        CREATE DATABASE {db_name}
+        CREATE DATABASE IF NOT EXISTS {db_name}
         """.format(db_name=db_name)
 
     spark.sql(SQL)
 
 def create_movie_table(spark, db_name, tbl_name, s3_loc):
     SQL = """
-        CREATE EXTERNAL TABLE {db_name}.{tbl_name}
+        CREATE EXTERNAL TABLE IF NOT EXISTS {db_name}.{tbl_name}
         (
             `imdbID` DOUBLE,
             `localized_title` STRING,
             `languages` STRING, 
-            `runtimes` INT, 
+            `runtimes` DOUBLE, 
             `original_air_date` STRING, 
             `original_air_date_country` STRING, 
             `plot` STRING
         )
-        ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
-        STORED AS PARQUET
+        ROW FORMAT SERDE 
+        'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' 
+        STORED AS INPUTFORMAT 
+        'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' 
+        OUTPUTFORMAT 
+        'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
         LOCATION '{s3_loc}'
         """.format(db_name=db_name, tbl_name=tbl_name, s3_loc=s3_loc)
 
@@ -31,13 +35,17 @@ def create_movie_table(spark, db_name, tbl_name, s3_loc):
 
 def create_genre_table(spark, db_name, tbl_name, s3_loc):
     SQL = """
-        CREATE EXTERNAL TABLE {db_name}.{tbl_name}
+        CREATE EXTERNAL TABLE IF NOT EXISTS {db_name}.{tbl_name}
         (
             `imdbID` DOUBLE,
             `genres` STRING
         )
-        ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
-        STORED AS PARQUET
+        ROW FORMAT SERDE 
+        'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' 
+        STORED AS INPUTFORMAT 
+        'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' 
+        OUTPUTFORMAT 
+        'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
         LOCATION '{s3_loc}'
         """.format(db_name=db_name, tbl_name=tbl_name, s3_loc=s3_loc)
 
@@ -46,13 +54,17 @@ def create_genre_table(spark, db_name, tbl_name, s3_loc):
 
 def create_artist_table(spark, db_name, tbl_name, s3_loc):
     SQL = """
-        CREATE EXTERNAL TABLE {db_name}.{tbl_name}
+        CREATE EXTERNAL TABLE IF NOT EXISTS {db_name}.{tbl_name}
         (
             `imdbID` DOUBLE,
             `movie_cast` STRING
         )
-        ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
-        STORED AS PARQUET
+        ROW FORMAT SERDE 
+        'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' 
+        STORED AS INPUTFORMAT 
+        'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' 
+        OUTPUTFORMAT 
+        'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
         LOCATION '{s3_loc}'
         """.format(db_name=db_name, tbl_name=tbl_name, s3_loc=s3_loc)
 
@@ -61,14 +73,18 @@ def create_artist_table(spark, db_name, tbl_name, s3_loc):
 
 def create_music_department_table(spark, db_name, tbl_name, s3_loc):
     SQL = """
-        CREATE EXTERNAL TABLE {db_name}.{tbl_name}
+        CREATE EXTERNAL TABLE IF NOT EXISTS {db_name}.{tbl_name}
         (
             `imdbID` DOUBLE,
             `music_department` STRING
         )
-        ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
-        STORED AS PARQUET
-        LOCATION '{s3_loc}'
+        ROW FORMAT SERDE 
+        'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' 
+        STORED AS INPUTFORMAT 
+        'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' 
+        OUTPUTFORMAT 
+        'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
+        LOCATION'{s3_loc}'
         """.format(db_name=db_name, tbl_name=tbl_name, s3_loc=s3_loc)
 
     spark.sql(SQL)
@@ -76,13 +92,17 @@ def create_music_department_table(spark, db_name, tbl_name, s3_loc):
 
 def create_director_table(spark, db_name, tbl_name, s3_loc):
     SQL = """
-    CREATE EXTERNAL TABLE {db_name}.{tbl_name}
+    CREATE EXTERNAL TABLE IF NOT EXISTS {db_name}.{tbl_name}
     (
         `imdbID` DOUBLE,
         `directors` STRING
     )
-    ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
-    STORED AS PARQUET
+    ROW FORMAT SERDE 
+    'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' 
+    STORED AS INPUTFORMAT 
+    'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' 
+    OUTPUTFORMAT 
+    'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
     LOCATION '{s3_loc}'
     """.format(db_name=db_name, tbl_name=tbl_name, s3_loc=s3_loc)
 
@@ -91,13 +111,17 @@ def create_director_table(spark, db_name, tbl_name, s3_loc):
 
 def create_producer_table(spark, db_name, tbl_name, s3_loc):
     SQL = """
-   CREATE EXTERNAL TABLE {db_name}.{tbl_name}
+   CREATE EXTERNAL TABLE IF NOT EXISTS {db_name}.{tbl_name}
     (
         `imdbID` DOUBLE,
         `producers` STRING
     )
-    ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
-    STORED AS PARQUET
+    ROW FORMAT SERDE 
+    'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' 
+    STORED AS INPUTFORMAT 
+    'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' 
+    OUTPUTFORMAT 
+    'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
     LOCATION '{s3_loc}'
     """.format(db_name=db_name, tbl_name=tbl_name, s3_loc=s3_loc)
 
@@ -105,13 +129,17 @@ def create_producer_table(spark, db_name, tbl_name, s3_loc):
 
 def create_writer_table(spark, db_name, tbl_name, s3_loc):
     SQL = """
-   CREATE EXTERNAL TABLE {db_name}.{tbl_name}
+   CREATE EXTERNAL TABLE IF NOT EXISTS {db_name}.{tbl_name}
     (
         `imdbID` DOUBLE,
         `writers` STRING
     )
-    ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
-    STORED AS PARQUET
+    ROW FORMAT SERDE 
+    'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' 
+    STORED AS INPUTFORMAT 
+    'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' 
+    OUTPUTFORMAT 
+    'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
     LOCATION '{s3_loc}'
     """.format(db_name=db_name, tbl_name=tbl_name, s3_loc=s3_loc)
 

@@ -4,7 +4,7 @@ APP_NAME = "schema_deletion"
 
 def delete_db(spark, db_name):
     SQL = """
-        DROP DATABASE {db_name} CASCADE
+        DROP DATABASE IF EXISTS {db_name} CASCADE
         """.format(db_name=db_name)
 
     spark.sql(SQL)
