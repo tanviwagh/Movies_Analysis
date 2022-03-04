@@ -14,10 +14,10 @@ def create_movie_table(spark, db_name, tbl_name, s3_loc):
         CREATE EXTERNAL TABLE IF NOT EXISTS {db_name}.{tbl_name}
         (
             `imdbID` DOUBLE,
-            `localized_title` STRING,
-            `languages` STRING, 
-            `runtimes` DOUBLE, 
-            `original_air_date` STRING, 
+            `movie_title` STRING,
+            `language` STRING, 
+            `runtime` INT, 
+            `original_air_date` DATE, 
             `original_air_date_country` STRING, 
             `plot` STRING
         )

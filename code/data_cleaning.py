@@ -1,5 +1,5 @@
 from utils import create_spark_session, load_config
-from pyspark.sql.functions import col, regexp_extract, regexp_replace, explode, split, udf
+from pyspark.sql.functions import col, regexp_extract, regexp_replace, explode, split, udf, date_format, to_date
 from pyspark.sql.types import DoubleType, DateType, IntegerType
 import os 
 
@@ -35,7 +35,7 @@ def read_json(folder_name, dir, emr_path ):
     return dataframe 
 
 def fill_null_values(dataframe):
-    null_dict = {'imdbID': 0, 'runtime': 0, 'original_air_date': '2099-12-31', 'movie_title': 'unknown'}
+    null_dict = {'imdbID': 0, 'runtime': 0, 'original_air_date': '31 Dec 9999 (Unknown)', 'movie_title': 'unknown'}
     
     dataframe = dataframe.na.fill(null_dict)
     
@@ -60,7 +60,14 @@ def clean_date_column(dataframe):
 
     final_dataframe = result_dataframe.withColumn("original_air_date_country", regexp_replace('original_air_date_country', r'\)|\(', "")).select(*cols)
     
+    
+    final_dataframe = final_dataframe.withColumn("original_air_date", regexp_replace('original_air_date', ' ', "")).select(*cols)
+
+    final_dataframe = final_dataframe.withColumn('original_air_date', date_format(to_date('original_air_date', 'ddMMMyyyy'), 'yyyy-MM-dd')).select(*cols)
+
     final_dataframe = final_dataframe.withColumn("original_air_date", final_dataframe.original_air_date.cast(DateType()))
+
+    #final_dataframe = final_dataframe.withColumn("original_air_date", final_dataframe.original_air_date.cast(DateType()))
     return final_dataframe
 
 
@@ -103,7 +110,7 @@ def convert_to_array_type(dataframe, col_name):
 def explode_array_columns(dataframe, col_name):
     exploded_dataframe = dataframe.withColumn(col_name, explode(dataframe[col_name])).\
                          select(col('imdbID'), col('movie_cast'), col('music_department'), 
-                                col('genre_name'), col('director_name'), col('writer_name'), 
+                                col('genre'), col('director_name'), col('writer_name'), 
                                 col('producer_name')).withColumnRenamed('col', col_name)
 
     exploded_dataframe = exploded_dataframe.withColumn(col_name, regexp_replace(col_name, r'\]|\[', ""))
