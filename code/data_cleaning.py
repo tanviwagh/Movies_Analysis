@@ -2,6 +2,7 @@ from utils import create_spark_session, load_config
 from pyspark.sql.functions import col, regexp_extract, regexp_replace, explode, split, udf, date_format, to_date
 from pyspark.sql.types import DoubleType, DateType, IntegerType
 import os 
+import shutil
 
 APP_NAME = "data_cleaning"
 
@@ -144,7 +145,7 @@ def remove_quotes(dataframe, movie_flag):
     return final_dataframe
 
 if __name__=="__main__":
-
+        
     spark = create_spark_session(APP_NAME)
 
     config_data = load_config() 
@@ -169,7 +170,13 @@ if __name__=="__main__":
 
     writer_tbl_name = config_data['athena']['writer_tbl_name']
 
+    try:
+        shutil.rmtree('../' + parquet_folder_name)
+    except:
+        pass
+
     all_dirs = os.listdir('../' + data_folder_name)
+
 
     for dir in all_dirs:
         input_df = read_json(data_folder_name, dir, emr_path)

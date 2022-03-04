@@ -38,7 +38,7 @@ def create_genre_table(spark, db_name, tbl_name, s3_loc):
         CREATE EXTERNAL TABLE IF NOT EXISTS {db_name}.{tbl_name}
         (
             `imdbID` DOUBLE,
-            `genres` STRING
+            `genre` STRING
         )
         ROW FORMAT SERDE 
         'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' 
@@ -95,7 +95,7 @@ def create_director_table(spark, db_name, tbl_name, s3_loc):
     CREATE EXTERNAL TABLE IF NOT EXISTS {db_name}.{tbl_name}
     (
         `imdbID` DOUBLE,
-        `directors` STRING
+        `director_name` STRING
     )
     ROW FORMAT SERDE 
     'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' 
@@ -114,7 +114,7 @@ def create_producer_table(spark, db_name, tbl_name, s3_loc):
    CREATE EXTERNAL TABLE IF NOT EXISTS {db_name}.{tbl_name}
     (
         `imdbID` DOUBLE,
-        `producers` STRING
+        `producer_name` STRING
     )
     ROW FORMAT SERDE 
     'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' 
@@ -132,7 +132,7 @@ def create_writer_table(spark, db_name, tbl_name, s3_loc):
    CREATE EXTERNAL TABLE IF NOT EXISTS {db_name}.{tbl_name}
     (
         `imdbID` DOUBLE,
-        `writers` STRING
+        `writer_name` STRING
     )
     ROW FORMAT SERDE 
     'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' 
