@@ -1,4 +1,4 @@
-from utils import connect_to_aws_service_client, load_config, create_spark_session
+from utils import connect_to_aws_service_client, load_config, create_spark_session, arg_parser
 import glob
 import os 
 
@@ -35,15 +35,16 @@ if __name__ == '__main__':
 
     create_bucket(buck_name)
 
+    ngrams = arg_parser('Please state json or parquet')
+
     try:
         for subdir in os.listdir('../' + folder_name):
             sub_folder_name = '/' + subdir 
-            #print(sub_folder_name)
-
-            json_files = glob.glob('../' + folder_name + sub_folder_name + '/*.parquet')
+         
+            all_files = glob.glob('../' + folder_name + sub_folder_name + '/*.' + ngrams)
             #print(json_files)
 
-            for filename in json_files:
+            for filename in all_files:
                 key = "%s/%s" % (folder_name + sub_folder_name, os.path.basename(filename))
                 print(key)
                 push_to_s3_bucket('../' + key ,buck_name, key)

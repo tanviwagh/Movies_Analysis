@@ -1,4 +1,4 @@
-from utils import create_spark_session, load_config
+from utils import create_spark_session, load_config, arg_parser
 from pyspark.sql.functions import col, regexp_extract, regexp_replace, explode, split, udf, date_format, to_date
 from pyspark.sql.types import DoubleType, DateType, IntegerType
 import os 
@@ -170,6 +170,8 @@ if __name__=="__main__":
 
     writer_tbl_name = config_data['athena']['writer_tbl_name']
 
+    s3_bucket_path = config_data['s3_bucket_details']['s3_bucket_path']
+
     try:
         shutil.rmtree('../' + parquet_folder_name)
     except:
@@ -177,6 +179,16 @@ if __name__=="__main__":
 
     all_dirs = os.listdir('../' + data_folder_name)
 
+    ngrams = arg_parser('Please specify parquet location')
+
+    local_parquet_path = "file://" + emr_path + parquet_folder_name + '/'
+
+    s3_parquet_path = s3_bucket_path + parquet_folder_name + '/'
+
+    if ngrams == 'local':
+        output_path = local_parquet_path 
+    elif ngrams == 's3':
+        output_path = s3_parquet_path
 
     for dir in all_dirs:
         input_df = read_json(data_folder_name, dir, emr_path)
@@ -219,25 +231,32 @@ if __name__=="__main__":
         producers_df = converted_df.select(col('imdbID'), col(cols_list[idx+5])).dropDuplicates()
 
 
-        output_path = "file://" + emr_path + parquet_folder_name + '/'  + movie_tbl_name
+        # output_path = "file://" + emr_path + parquet_folder_name + '/'  + movie_tbl_name
+        output_path = output_path + movie_tbl_name
         save_to_parquet(unique_movie_df, output_path)
 
-        output_path = "file://" + emr_path + parquet_folder_name + '/' + artist_tbl_name
+        # output_path = "file://" + emr_path + parquet_folder_name + '/' + artist_tbl_name
+        output_path = output_path + artist_tbl_name
         save_to_parquet(movie_cast_df, output_path)
         
-        output_path = "file://" + emr_path + parquet_folder_name + '/' + music_tbl_name
+        # output_path = "file://" + emr_path + parquet_folder_name + '/' + music_tbl_name
+        output_path = output_path + music_tbl_name
         save_to_parquet(music_department_df, output_path)
         
-        output_path = "file://" + emr_path + parquet_folder_name + '/' + genre_tbl_name
+        # output_path = "file://" + emr_path + parquet_folder_name + '/' + genre_tbl_name
+        output_path = output_path + genre_tbl_name
         save_to_parquet(genres_df, output_path)
         
-        output_path = "file://" + emr_path + parquet_folder_name + '/' + director_tbl_name
+        # output_path = "file://" + emr_path + parquet_folder_name + '/' + director_tbl_name
+        output_path = output_path + director_tbl_name
         save_to_parquet(directors_df, output_path)
         
-        output_path = "file://" + emr_path + parquet_folder_name + '/' + producer_tbl_name
+        # output_path = "file://" + emr_path + parquet_folder_name + '/' + producer_tbl_name
+        output_path = output_path + producer_tbl_name
         save_to_parquet(writers_df, output_path)
         
-        output_path = "file://" + emr_path + parquet_folder_name + '/' + writer_tbl_name
+        # output_path = "file://" + emr_path + parquet_folder_name + '/' + writer_tbl_name
+        output_path = output_path + writer_tbl_name
         save_to_parquet(producers_df, output_path)
 
             
