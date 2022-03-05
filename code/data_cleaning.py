@@ -186,9 +186,9 @@ if __name__=="__main__":
     s3_parquet_path = s3_bucket_path + parquet_folder_name + '/'
 
     if ngrams == 'local':
-        output_path = local_parquet_path 
+        output_data_path = local_parquet_path 
     elif ngrams == 's3':
-        output_path = s3_parquet_path
+        output_data_path = s3_parquet_path
 
     for dir in all_dirs:
         input_df = read_json(data_folder_name, dir, emr_path)
@@ -232,31 +232,31 @@ if __name__=="__main__":
 
 
         # output_path = "file://" + emr_path + parquet_folder_name + '/'  + movie_tbl_name
-        output_path = output_path + movie_tbl_name
+        output_path = output_data_path + movie_tbl_name
         save_to_parquet(unique_movie_df, output_path)
 
         # output_path = "file://" + emr_path + parquet_folder_name + '/' + artist_tbl_name
-        output_path = output_path + artist_tbl_name
+        output_path = output_data_path + artist_tbl_name
         save_to_parquet(movie_cast_df, output_path)
         
         # output_path = "file://" + emr_path + parquet_folder_name + '/' + music_tbl_name
-        output_path = output_path + music_tbl_name
+        output_path = output_data_path + music_tbl_name
         save_to_parquet(music_department_df, output_path)
         
         # output_path = "file://" + emr_path + parquet_folder_name + '/' + genre_tbl_name
-        output_path = output_path + genre_tbl_name
+        output_path = output_data_path + genre_tbl_name
         save_to_parquet(genres_df, output_path)
         
         # output_path = "file://" + emr_path + parquet_folder_name + '/' + director_tbl_name
-        output_path = output_path + director_tbl_name
+        output_path = output_data_path + director_tbl_name
         save_to_parquet(directors_df, output_path)
         
         # output_path = "file://" + emr_path + parquet_folder_name + '/' + producer_tbl_name
-        output_path = output_path + producer_tbl_name
+        output_path = output_data_path + producer_tbl_name
         save_to_parquet(writers_df, output_path)
         
         # output_path = "file://" + emr_path + parquet_folder_name + '/' + writer_tbl_name
-        output_path = output_path + writer_tbl_name
+        output_path = output_data_path + writer_tbl_name
         save_to_parquet(producers_df, output_path)
 
             
