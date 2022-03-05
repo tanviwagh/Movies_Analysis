@@ -7,7 +7,7 @@ def table_exists_check(spark, db_name, tbl_name):
     if spark._jsparkSession.catalog().tableExists('db_name', 'tableName'):
         print("Table exists")
     else:
-        raise Exception("Table {db_name}.{tbl_name} does not exist").format(db_name=db_name, tbl_name=tbl_name)
+        raise Exception("Table {db_name}.{tbl_name} does not exist".format(db_name=db_name, tbl_name=tbl_name))
 
 def row_count_check(spark, db_name, tbl_name):
     SQL = """ SELECT COUNT(*) FROM {db_name}.{tbl_name} """.format(db_name=db_name, tbl_name=tbl_name)
