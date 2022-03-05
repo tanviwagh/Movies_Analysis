@@ -1,11 +1,10 @@
 import requests
 from bs4 import BeautifulSoup 
-import pandas as pd 
 import re
 import json
 import os
 from imdb import IMDb, IMDbDataAccessError
-from utils import load_config, create_spark_session
+from utils import load_config, create_spark_session, arg_parser
 
 APP_NAME= "get_movie_data"
 
@@ -79,8 +78,10 @@ def create_dictionary(ids, names):
     return movie_dict 
 
 
-def create_sub_folder(folder_name, year):
-    path = '../' + str(folder_name) + '/' + str(year)
+def create_sub_folder(output_data_path, folder_name, year):
+    # path = '../' + str(folder_name) + '/' + str(year)
+
+    path = output_data_path + str(folder_name) + '/' + str(year)
    
     if not os.path.exists(path):
         os.makedirs(path)
@@ -120,7 +121,8 @@ def store_to_json(movie_dict, year):
         except IMDbDataAccessError:
             print("Operation timed out")
 
-        file_name = '../data/' + str(year) + '/' + str(id) + '.json'  
+        #file_name = '../data/' + str(year) + '/' + str(id) + '.json'  
+        file_name = output_data_path + data_folder_name + '/' + str(year) + '/' + str(id) + '.json'  
         
         with open(file_name, 'w') as file:
             json.dump(dict, file, indent=4)
@@ -131,7 +133,20 @@ if __name__ == '__main__':
 
     config_data = load_config() 
 
-    folder_name = config_data['data']['data_folder_name']
+    data_folder_name = config_data['data']['data_folder_name']
+
+    s3_bucket_path = config_data['s3_bucket_details']['s3_bucket_path']
+
+    ngrams = arg_parser('Please specify data location')
+
+    local_data_path = '../'
+
+    s3_data_path = s3_bucket_path 
+
+    if ngrams == 'local':
+        output_data_path = local_data_path 
+    elif ngrams == 's3':
+        output_data_path = s3_data_path
 
     imdb_obj = IMDb()
     # loop through years
@@ -148,6 +163,6 @@ if __name__ == '__main__':
         movie_dict = create_dictionary(ids, cleaned_names)
         print(len(movie_dict))
 
-        create_sub_folder(folder_name, year)
+        create_sub_folder(output_data_path, data_folder_name, year)
 
         store_to_json(movie_dict, year)
