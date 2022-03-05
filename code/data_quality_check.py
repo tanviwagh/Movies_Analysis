@@ -3,11 +3,17 @@ from pyspark.sql.functions import col
 
 APP_NAME = "data_quality_check"
 
+def table_exists_check(spark, db_name, tbl_name):
+    if spark._jsparkSession.catalog().tableExists('db_name', 'tableName'):
+        print("Table exists")
+    else:
+        raise Exception("Table {db_name}.{tbl_name} does not exist").format(db_name=db_name, tbl_name=tbl_name)
+
 def row_count_check(spark, db_name, tbl_name):
     SQL = """ SELECT COUNT(*) FROM {db_name}.{tbl_name} """.format(db_name=db_name, tbl_name=tbl_name)
     count_df = spark.sql(SQL)
 
-    if count_df.collect[0][0] > 0:
+    if count_df.collect()[0][0] > 0:
         print("Row count check successful")
     else:
         raise Exception("Row count check has failed for {db_name}.{tbl_name}".format(db_name=db_name, tbl_name=tbl_name))
@@ -22,7 +28,7 @@ def non_null_check(spark, db_name, tbl_name):
 
     filtered_df = data_df.filter(filter_cond)
 
-    if filtered_df.count == 0:
+    if filtered_df.count() == 0:
         print("Non-NULL check successful")
     else:
         raise Exception("Non-NULL check has failed for {db_name}.{tbl_name}".format(db_name=db_name, tbl_name=tbl_name))
@@ -50,6 +56,14 @@ if __name__=="__main__":
     producer_tbl_name = config_data['athena']['producer_tbl_name']
 
     writer_tbl_name = config_data['athena']['writer_tbl_name']
+
+    table_exists_check(spark, db_name, movie_tbl_name)
+    table_exists_check(spark, db_name, genre_tbl_name)
+    table_exists_check(spark, db_name, artist_tbl_name)
+    table_exists_check(spark, db_name, music_tbl_name)
+    table_exists_check(spark, db_name, director_tbl_name)
+    table_exists_check(spark, db_name, producer_tbl_name)
+    table_exists_check(spark, db_name, writer_tbl_name)
 
     row_count_check(spark, db_name, movie_tbl_name)
     row_count_check(spark, db_name, genre_tbl_name)
