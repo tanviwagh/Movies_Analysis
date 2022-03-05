@@ -36,17 +36,17 @@ if __name__ == '__main__':
     create_bucket(buck_name)
 
     ngrams = arg_parser('Please state json or parquet')
+    if ngrams != '':
+        try:
+            for subdir in os.listdir('../' + folder_name):
+                sub_folder_name = '/' + subdir 
+            
+                all_files = glob.glob('../' + folder_name + sub_folder_name + '/*.' + ngrams)
+                #print(json_files)
 
-    try:
-        for subdir in os.listdir('../' + folder_name):
-            sub_folder_name = '/' + subdir 
-         
-            all_files = glob.glob('../' + folder_name + sub_folder_name + '/*.' + ngrams)
-            #print(json_files)
-
-            for filename in all_files:
-                key = "%s/%s" % (folder_name + sub_folder_name, os.path.basename(filename))
-                print(key)
-                push_to_s3_bucket('../' + key ,buck_name, key)
-    except:
-        print('Bucket does not exist.')
+                for filename in all_files:
+                    key = "%s/%s" % (folder_name + sub_folder_name, os.path.basename(filename))
+                    print(key)
+                    push_to_s3_bucket('../' + key ,buck_name, key)
+        except:
+            print('Bucket does not exist.')

@@ -22,7 +22,7 @@ def non_null_check(spark, db_name, tbl_name):
 
     filtered_df = data_df.filter(filter_cond)
 
-    if filtered_df.count > 0:
+    if filtered_df.count == 0:
         print("Non-NULL check successful")
     else:
         raise Exception("Non-NULL check has failed for {db_name}.{tbl_name}".format(db_name=db_name, tbl_name=tbl_name))
