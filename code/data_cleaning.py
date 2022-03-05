@@ -126,7 +126,7 @@ def remove_quotes(dataframe, movie_flag):
         dataframe = dataframe.select(*cols)
     
         final_dataframe = dataframe.withColumn('language', regexp_replace('language', '"', ''))
-        final_dataframe = dataframe.withColumn('plot', regexp_replace('plot', '"', ''))
+        final_dataframe = final_dataframe.withColumn('plot', regexp_replace('plot', '"', ''))
         
     else:
         cols = [ col('imdbID'), col('movie_cast'), col('music_department'), col('genre'),
