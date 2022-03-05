@@ -1,7 +1,9 @@
-from utils import connect_to_aws_service_resource, connect_to_aws_service_client, load_config
+from utils import connect_to_aws_service_resource, connect_to_aws_service_client, load_config, create_spark_session
 import glob
 import os 
 import json
+
+APP_NAME = "load_data_into_dynamodb"
 
 def create_dynamodb_table(table_name, partition_key, sort_key):
             
@@ -43,6 +45,7 @@ def push_data_to_dynamodb(table_name, item):
 
 
 if __name__ == '__main__':
+    spark = create_spark_session(APP_NAME)
 
     config_data = load_config() 
 

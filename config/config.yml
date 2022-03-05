@@ -6,6 +6,7 @@ aws_credentials:
 s3_bucket_details:
     region_name: 'us-east-1'
     bucket_name: 'movie-analysis-bucket'
+    s3_bucket_path: 's3://movie-analysis-bucket/'
 
 data:
     data_folder_name: data
@@ -20,4 +21,19 @@ dynamodb_table_details:
 paths:
     emr_path: '/home/hadoop/Movies_Analysis/'
 
-  
+athena:
+    db_name: 'test'
+    movie_tbl_name: 'movies'
+    movie_s3_loc: 's3://movie-analysis-bucket/parquet/movies/'
+    genre_tbl_name: 'genres'
+    genre_s3_loc: 's3://movie-analysis-bucket/parquet/genres/'
+    artist_tbl_name: 'artists'
+    artist_s3_loc: 's3://movie-analysis-bucket/parquet/artists/'
+    music_tbl_name: 'music'
+    music_s3_loc: 's3://movie-analysis-bucket/parquet/music/'
+    director_tbl_name: 'directors'
+    director_s3_loc: 's3://movie-analysis-bucket/parquet/directors/'
+    producer_tbl_name: 'producers'
+    producer_s3_loc: 's3://movie-analysis-bucket/parquet/producers/'
+    writer_tbl_name: 'writers'
+    writer_s3_loc: 's3://movie-analysis-bucket/parquet/writers/'

@@ -2,6 +2,7 @@ import boto3
 import yaml
 from yaml.loader import SafeLoader
 from pyspark.sql import SparkSession
+import argparse
 
 def load_config():
     with open('../config/config.yml') as file:
@@ -32,7 +33,18 @@ def create_spark_session(app_name):
     spark = SparkSession.builder \
             .master("local") \
             .appName(app_name) \
+            .enableHiveSupport() \
             .getOrCreate()
 
     return spark 
 
+def arg_parser(description):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ngrams", help=description)
+    args = parser.parse_args()
+    if args.ngrams:
+        ngrams = args.ngrams
+    else:
+        ngrams =''
+        
+    return ngrams
