@@ -147,6 +147,8 @@ if __name__ == '__main__':
         output_data_path = local_data_path 
     elif ngrams == 's3':
         output_data_path = s3_data_path
+    else:
+        raise Exception("Please specify json destination s3 or local")
 
     imdb_obj = IMDb()
     # loop through years

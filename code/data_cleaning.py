@@ -189,6 +189,9 @@ if __name__=="__main__":
         output_data_path = local_parquet_path 
     elif ngrams == 's3':
         output_data_path = s3_parquet_path
+    else:
+        raise Exception("Please specify parquet destination s3 or local")
+
 
     for dir in all_dirs:
         input_df = read_json(data_folder_name, dir, emr_path)

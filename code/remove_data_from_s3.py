@@ -28,16 +28,20 @@ if __name__ == '__main__':
 
     ngrams = arg_parser('Please state cleanup or delete')
 
-    try:
-        for obj_list in s3_client.list_objects(Bucket=bucket_name)['Contents']:
-            key = obj_list['Key']
-            print(key)
-            delete_data_from_bucket(bucket_name, key)
-    except:
-        print('Bucket is empty. Nothing to delete.')
+    if ngrams == '':
+        try:
+            for obj_list in s3_client.list_objects(Bucket=bucket_name)['Contents']:
+                key = obj_list['Key']
+                print(key)
+                delete_data_from_bucket(bucket_name, key)
+        except:
+            print('Bucket is empty. Nothing to delete.')
     
-    if ngrams == 'delete': 
+    elif ngrams == 'delete': 
         try:
             delete_bucket(bucket_name)
         except:
             print('Bucket does not exist.')
+    
+    else:
+        raise Exception("Please specify 'delete' for deleting bucket or '' for deleting all objects.")

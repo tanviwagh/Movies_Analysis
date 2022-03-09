@@ -45,6 +45,6 @@ def arg_parser(description):
     if args.ngrams:
         ngrams = args.ngrams
     else:
-        ngrams =''
+        ngrams = ''
         
     return ngrams

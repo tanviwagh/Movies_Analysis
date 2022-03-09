@@ -33,10 +33,15 @@ if __name__ == '__main__':
     
     s3_client = connect_to_aws_service_client('s3', access_key, secret_key, region_name)
 
-    create_bucket(buck_name)
-
     ngrams = arg_parser('Please state json or parquet')
-    if ngrams != '':
+
+    if ngrams == '':
+        try:
+            create_bucket(buck_name)
+        except:
+            print('Bucket already exists.')
+   
+    else:
         try:
             for subdir in os.listdir('../' + folder_name):
                 sub_folder_name = '/' + subdir 
