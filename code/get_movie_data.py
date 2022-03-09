@@ -137,15 +137,15 @@ if __name__ == '__main__':
 
     s3_bucket_path = config_data['s3_bucket_details']['s3_bucket_path']
 
-    ngrams = arg_parser('Please specify data location')
+    args = arg_parser('Please specify data location')
 
     local_data_path = '../'
 
     s3_data_path = s3_bucket_path 
 
-    if ngrams == 'local':
+    if args == 'local':
         output_data_path = local_data_path 
-    elif ngrams == 's3':
+    elif args == 's3':
         output_data_path = s3_data_path
     else:
         raise Exception("Please specify json destination s3 or local")

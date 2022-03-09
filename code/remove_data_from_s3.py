@@ -26,9 +26,9 @@ if __name__ == '__main__':
     
     s3_client = connect_to_aws_service_client('s3', access_key, secret_key, region_name)
 
-    ngrams = arg_parser('Please state cleanup or delete')
+    args = arg_parser('Please state cleanup or delete')
 
-    if ngrams == '':
+    if args == '':
         try:
             for obj_list in s3_client.list_objects(Bucket=bucket_name)['Contents']:
                 key = obj_list['Key']
@@ -37,7 +37,7 @@ if __name__ == '__main__':
         except:
             print('Bucket is empty. Nothing to delete.')
     
-    elif ngrams == 'delete': 
+    elif args == 'delete': 
         try:
             delete_bucket(bucket_name)
         except:

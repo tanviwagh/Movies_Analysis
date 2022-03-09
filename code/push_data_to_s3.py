@@ -33,9 +33,9 @@ if __name__ == '__main__':
     
     s3_client = connect_to_aws_service_client('s3', access_key, secret_key, region_name)
 
-    ngrams = arg_parser('Please state json or parquet')
+    args = arg_parser('Please state json or parquet')
 
-    if ngrams == '':
+    if args == '':
         try:
             create_bucket(buck_name)
         except:
@@ -46,7 +46,7 @@ if __name__ == '__main__':
             for subdir in os.listdir('../' + folder_name):
                 sub_folder_name = '/' + subdir 
             
-                all_files = glob.glob('../' + folder_name + sub_folder_name + '/*.' + ngrams)
+                all_files = glob.glob('../' + folder_name + sub_folder_name + '/*.' + args)
                 #print(json_files)
 
                 for filename in all_files:

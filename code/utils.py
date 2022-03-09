@@ -40,11 +40,11 @@ def create_spark_session(app_name):
 
 def arg_parser(description):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--ngrams", help=description)
-    args = parser.parse_args()
-    if args.ngrams:
-        ngrams = args.ngrams
+    parser.add_argument("--args", help=description)
+    p_args = parser.parse_args()
+    if p_args.args:
+        args = p_args.args
     else:
-        ngrams = ''
+        args = ''
         
-    return ngrams
+    return args
