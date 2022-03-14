@@ -1,5 +1,4 @@
 import boto3
-import argparse
 import yaml
 from yaml.loader import SafeLoader
 from pyspark.sql import SparkSession
@@ -38,14 +37,3 @@ def create_spark_session(app_name):
             .getOrCreate()
 
     return spark 
-
-def arg_parser(description):
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--ngrams", help=description)
-    args = parser.parse_args()
-    if args.ngrams:
-        ngrams = args.ngrams
-    else:
-        ngrams =''
-        
-    return ngrams

@@ -139,7 +139,10 @@ def store_to_json(movie_dict, year):
         # with open(file_name, 'w') as file:
         #     json.dump(dict, file, indent=4)
         
+
         s3_client = boto3.client('s3')
         bucket = 'movie-analysis-bucket'
         key = 'data' + '/' + str(year) + '/' + str(id) + '.json' 
         s3_client.put_object(Body=dict, Bucket=bucket, Key=key)
+
+
