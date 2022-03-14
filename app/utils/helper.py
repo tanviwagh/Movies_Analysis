@@ -2,7 +2,7 @@ import boto3
 import yaml
 from yaml.loader import SafeLoader
 from pyspark.sql import SparkSession
-from s3_helper import read_s3_file
+from app.utils.s3_helper import read_s3_file
 
 def load_config(path):
     file = read_s3_file(path)

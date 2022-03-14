@@ -7,26 +7,26 @@ from imdb import IMDb, IMDbDataAccessError
 import boto3 
 
 def process(spark, config):
-    s3_bucket_path = config['s3_bucket_details']['s3_bucket_path']
+    bucket_name = config['s3_bucket_details']['bucket_name']
     data_folder_name = config['s3_bucket_details']['s3_bucket_path']
 
     imdb_obj = IMDb()
 
     # loop through years
-    for year in range(2001,2022):
+    for year in range(2001,2003):
         names = get_names_from_wiki(year)
         print(len(names))
 
         cleaned_names = clean_movie_list(names)
         print(len(cleaned_names))
 
-        ids = find_unknown_id_movies(cleaned_names)
+        ids = find_unknown_id_movies(imdb_obj, cleaned_names)
         print(len(ids))
 
         movie_dict = create_dictionary(ids, cleaned_names)
         print(len(movie_dict))
 
-        store_to_json(movie_dict, year)
+        store_to_json(imdb_obj, movie_dict, year, bucket_name, data_folder_name)
 
 
 def get_names_from_wiki(year):
@@ -61,10 +61,8 @@ def clean_movie_list(names):
     return names
 
 
-def find_unknown_id_movies(names):
+def find_unknown_id_movies(imdb_obj, names):
     ids = []
-
-    #imdb_obj = IMDb()
 
     for movie in names:
         try:
@@ -99,8 +97,7 @@ def create_dictionary(ids, names):
     return movie_dict 
 
 
-def store_to_json(movie_dict, year):
-    #imdb_obj = IMDb()
+def store_to_json(imdb_obj, movie_dict, year, bucket_name, data_folder_name):
 
     for id in movie_dict.keys():
         try:
@@ -133,16 +130,11 @@ def store_to_json(movie_dict, year):
         except IMDbDataAccessError:
             print("Operation timed out")
 
-        #file_name = '../data/' + str(year) + '/' + str(id) + '.json'  
-        # file_name = output_data_path + data_folder_name + '/' + str(year) + '/' + str(id) + '.json'  
-        
-        # with open(file_name, 'w') as file:
-        #     json.dump(dict, file, indent=4)
-        
-
         s3_client = boto3.client('s3')
-        bucket = 'movie-analysis-bucket'
-        key = 'data' + '/' + str(year) + '/' + str(id) + '.json' 
-        s3_client.put_object(Body=dict, Bucket=bucket, Key=key)
+
+        bucket = bucket_name
+        key = data_folder_name + '/' + str(year) + '/' + str(id) + '.json' 
+
+        s3_client.put_object(Body=(bytes(json.dumps(dict).encode('UTF-8'))), Bucket=bucket, Key=key)
 
 
