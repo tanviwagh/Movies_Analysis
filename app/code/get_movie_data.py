@@ -5,15 +5,16 @@ import json
 import os
 from imdb import IMDb, IMDbDataAccessError
 import boto3 
+from app.utils.helper import connect_to_aws_service_client
 
 def process(spark, config):
     bucket_name = config['s3_bucket_details']['bucket_name']
-    data_folder_name = config['s3_bucket_details']['s3_bucket_path']
+    data_folder_name = config['data']['data_folder_loc']
 
     imdb_obj = IMDb()
 
     # loop through years
-    for year in range(2001,2003):
+    for year in range(2001,2002):
         names = get_names_from_wiki(year)
         print(len(names))
 
@@ -130,10 +131,12 @@ def store_to_json(imdb_obj, movie_dict, year, bucket_name, data_folder_name):
         except IMDbDataAccessError:
             print("Operation timed out")
 
-        s3_client = boto3.client('s3')
+        s3_client = connect_to_aws_service_client('s3')
 
         bucket = bucket_name
         key = data_folder_name + '/' + str(year) + '/' + str(id) + '.json' 
+
+        print("Uploading file {key} to bucket {buck}".format(key=key, buck=bucket))
 
         s3_client.put_object(Body=(bytes(json.dumps(dict).encode('UTF-8'))), Bucket=bucket, Key=key)
 

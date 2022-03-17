@@ -3,13 +3,9 @@ from app.utils.helper import connect_to_aws_service_client
 
 def process(spark, config):
 
-    access_key = config['aws_credentials']['access_key']
-    secret_key = config['aws_credentials']['secret_key']
-
-    region_name = config['s3_bucket_details']['region_name']
     buck_name = config['s3_bucket_details']['bucket_name']
 
-    s3_client = connect_to_aws_service_client('s3', access_key, secret_key, region_name)
+    s3_client = connect_to_aws_service_client('s3')
 
     create_bucket(s3_client, buck_name)
 
