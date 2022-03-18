@@ -11,10 +11,10 @@ def load_config(path):
     return config_data
 
 
-def connect_to_aws_service_client(service_name):
-    aws_client = boto3.client(service_name)
+# def connect_to_aws_service_client(service_name):
+#     aws_client = boto3.client(service_name)
 
-    return aws_client
+#     return aws_client
 
 
 def connect_to_aws_service_resource(service_name, access_key, secret_key, region_name):

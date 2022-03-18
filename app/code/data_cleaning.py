@@ -1,4 +1,4 @@
-from app.utils.helper import connect_to_aws_service_client
+import boto3
 from pyspark.sql.functions import col, regexp_extract, regexp_replace, explode, split, udf, date_format, to_date
 from pyspark.sql.types import DoubleType, DateType, IntegerType
 
@@ -27,15 +27,25 @@ def process(spark, config):
     s3_bucket_path = config['s3_bucket_details']['s3_bucket_path']
 
     bucket_name = config['s3_bucket_details']['s3_bucket_data_path']
+    bucket= bucket_name.split('/')[2:]
+    bucket_name= '/'.join(bucket)
 
-    s3_client = connect_to_aws_service_client('s3')
+    # s3_client = connect_to_aws_service_client('s3')
+    s3_client = boto3.client('s3')
+
+    all_dirs = []
 
     for obj_list in s3_client.list_objects(Bucket=bucket_name)['Contents']:
         key = obj_list['Key']
 
         key = key.split('/')[:2]
         key = '/'.join(key)
+        all_dirs.append(key)
+    
+    all_dirs = set(all_dirs)
+    all_dirs = list(all_dirs)
 
+    for key in all_dirs:
         input_df = read_json(spark, data_folder_name, key, bucket_name)
 
         non_null_df = fill_null_values(input_df)
@@ -67,7 +77,6 @@ def process(spark, config):
 
         idx = 0
 
-
         movie_cast_df = converted_df.select(col('imdbID'), col(cols_list[idx])).dropDuplicates()
         music_department_df = converted_df.select(col('imdbID'), col(cols_list[idx+1])).dropDuplicates()
         genres_df = converted_df.select(col('imdbID'), col(cols_list[idx+2])).dropDuplicates()
@@ -75,38 +84,32 @@ def process(spark, config):
         writers_df = converted_df.select(col('imdbID'), col(cols_list[idx+4])).dropDuplicates()
         producers_df = converted_df.select(col('imdbID'), col(cols_list[idx+5])).dropDuplicates()
 
-        # output_path = "file://" + emr_path + parquet_folder_name + '/'  + movie_tbl_name
-        output_path = bucket_name + parquet_folder_name + '/' + movie_tbl_name
+        
+        output_path = 's3://' + bucket_name + '/' + parquet_folder_name + '/' + movie_tbl_name
         save_to_parquet(unique_movie_df, output_path)
 
-        # output_path = "file://" + emr_path + parquet_folder_name + '/' + artist_tbl_name
-        output_path = bucket_name + parquet_folder_name + '/' + artist_tbl_name
+        output_path = 's3://' + bucket_name + '/' + parquet_folder_name + '/' + artist_tbl_name
         save_to_parquet(movie_cast_df, output_path)
         
-        # output_path = "file://" + emr_path + parquet_folder_name + '/' + music_tbl_name
-        output_path = bucket_name + parquet_folder_name + '/' + music_tbl_name
+        output_path = 's3://' + bucket_name + '/' + parquet_folder_name + '/' + music_tbl_name
         save_to_parquet(music_department_df, output_path)
         
-        # output_path = "file://" + emr_path + parquet_folder_name + '/' + genre_tbl_name
-        output_path = bucket_name + parquet_folder_name + '/' + genre_tbl_name
+        output_path = 's3://' + bucket_name + '/' + parquet_folder_name + '/' + genre_tbl_name
         save_to_parquet(genres_df, output_path)
         
-        # output_path = "file://" + emr_path + parquet_folder_name + '/' + director_tbl_name
-        output_path = bucket_name + parquet_folder_name + '/' + director_tbl_name
+        output_path = 's3://' + bucket_name + '/' + parquet_folder_name + '/' + director_tbl_name
         save_to_parquet(directors_df, output_path)
         
-        # output_path = "file://" + emr_path + parquet_folder_name + '/' + producer_tbl_name
-        output_path = bucket_name + parquet_folder_name + '/' + producer_tbl_name
-        save_to_parquet(writers_df, output_path)
-        
-        # output_path = "file://" + emr_path + parquet_folder_name + '/' + writer_tbl_name
-        output_path = bucket_name + parquet_folder_name + '/' + writer_tbl_name
+        output_path = 's3://' + bucket_name + '/' + parquet_folder_name + '/' + producer_tbl_name
         save_to_parquet(producers_df, output_path)
+        
+        output_path = 's3://' + bucket_name + '/' + parquet_folder_name + '/' + writer_tbl_name
+        save_to_parquet(writers_df, output_path)
 
-            
+              
 def read_json(spark, folder_name, key, bucket_name):
-    #dataframe = spark.read.option("multiline","true").json("../" + folder_name + "/" + dir + "/*.json")
-    dataframe = spark.read.option("multiline","true").json(bucket_name + key + "/*.json")
+
+    dataframe = spark.read.option("multiline","true").json('s3://'+ bucket_name + '/' + key + "/*.json")
     
     cols = [ col('imdbID'), col('localized title'), col('languages'), col('runtimes'), col('original air date'),
             col('plot'), col('cast'), col('music department'), col('genres'),
@@ -165,7 +168,6 @@ def clean_date_column(dataframe):
 
     final_dataframe = final_dataframe.withColumn("original_air_date", final_dataframe.original_air_date.cast(DateType()))
 
-    #final_dataframe = final_dataframe.withColumn("original_air_date", final_dataframe.original_air_date.cast(DateType()))
     return final_dataframe
 
 
