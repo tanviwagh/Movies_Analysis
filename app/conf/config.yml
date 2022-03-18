@@ -5,7 +5,8 @@ aws_credentials:
 s3_bucket_details:
     region_name: 'us-east-1'
     bucket_name: 'movie-analysis-bucket'
-    s3_bucket_path: 's3://movie-analysis-bucket/'
+    s3_bucket_path: 's3://movie-analysis-code-bucket/'
+    s3_bucket_data_path: 's3://movie-analysis-data-bucket/'
 
 data:
     data_folder_name: data

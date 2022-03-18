@@ -1,15 +1,112 @@
-from utils import create_spark_session, load_config, arg_parser
+from app.utils.helper import connect_to_aws_service_client
 from pyspark.sql.functions import col, regexp_extract, regexp_replace, explode, split, udf, date_format, to_date
 from pyspark.sql.types import DoubleType, DateType, IntegerType
-import os 
-import shutil
 
-APP_NAME = "data_cleaning"
+def process(spark, config):
+
+    data_folder_name = config['data']['data_folder_name']
+
+    parquet_folder_name = config['data']['parquet_folder_name']
+
+    emr_path = config['paths']['emr_path']
+
+    movie_tbl_name = config['athena']['movie_tbl_name']
+
+    genre_tbl_name = config['athena']['genre_tbl_name']
+
+    artist_tbl_name = config['athena']['artist_tbl_name']
+
+    music_tbl_name = config['athena']['music_tbl_name']
+
+    director_tbl_name = config['athena']['director_tbl_name']
+
+    producer_tbl_name = config['athena']['producer_tbl_name']
+
+    writer_tbl_name = config['athena']['writer_tbl_name']
+
+    s3_bucket_path = config['s3_bucket_details']['s3_bucket_path']
+
+    bucket_name = config['s3_bucket_details']['s3_bucket_data_path']
+
+    s3_client = connect_to_aws_service_client('s3')
+
+    for obj_list in s3_client.list_objects(Bucket=bucket_name)['Contents']:
+        key = obj_list['Key']
+
+        key = key.split('/')[:2]
+        key = '/'.join(key)
+
+        input_df = read_json(spark, data_folder_name, key, bucket_name)
+
+        non_null_df = fill_null_values(input_df)
+
+        formatted_df = clean_date_column(non_null_df)
+
+        formatted_df = convert_list_column(formatted_df)
+     
+        base_df = input_df
+
+        cols_list = ['movie_cast','music_department', 'genre','director_name', 'writer_name', 'producer_name']
+
+        for col_name in cols_list:
+            d_type = dict(base_df.dtypes)[col_name]
+            if d_type == 'string':
+                base_df = convert_to_array_type(base_df, col_name)
+
+        converted_df = base_df
+
+        for col_name in cols_list:
+            d_type = dict(converted_df.dtypes)[col_name]
+            if d_type == 'array<string>':
+                converted_df = explode_array_columns(converted_df, col_name)   
+
+        unique_movie_df = formatted_df.dropDuplicates()
+
+        unique_movie_df = remove_quotes(unique_movie_df, True)
+        converted_df = remove_quotes(converted_df, False)
+
+        idx = 0
 
 
-def read_json(folder_name, dir, emr_path ):
+        movie_cast_df = converted_df.select(col('imdbID'), col(cols_list[idx])).dropDuplicates()
+        music_department_df = converted_df.select(col('imdbID'), col(cols_list[idx+1])).dropDuplicates()
+        genres_df = converted_df.select(col('imdbID'), col(cols_list[idx+2])).dropDuplicates()
+        directors_df = converted_df.select(col('imdbID'), col(cols_list[idx+3])).dropDuplicates()
+        writers_df = converted_df.select(col('imdbID'), col(cols_list[idx+4])).dropDuplicates()
+        producers_df = converted_df.select(col('imdbID'), col(cols_list[idx+5])).dropDuplicates()
+
+        # output_path = "file://" + emr_path + parquet_folder_name + '/'  + movie_tbl_name
+        output_path = bucket_name + parquet_folder_name + '/' + movie_tbl_name
+        save_to_parquet(unique_movie_df, output_path)
+
+        # output_path = "file://" + emr_path + parquet_folder_name + '/' + artist_tbl_name
+        output_path = bucket_name + parquet_folder_name + '/' + artist_tbl_name
+        save_to_parquet(movie_cast_df, output_path)
+        
+        # output_path = "file://" + emr_path + parquet_folder_name + '/' + music_tbl_name
+        output_path = bucket_name + parquet_folder_name + '/' + music_tbl_name
+        save_to_parquet(music_department_df, output_path)
+        
+        # output_path = "file://" + emr_path + parquet_folder_name + '/' + genre_tbl_name
+        output_path = bucket_name + parquet_folder_name + '/' + genre_tbl_name
+        save_to_parquet(genres_df, output_path)
+        
+        # output_path = "file://" + emr_path + parquet_folder_name + '/' + director_tbl_name
+        output_path = bucket_name + parquet_folder_name + '/' + director_tbl_name
+        save_to_parquet(directors_df, output_path)
+        
+        # output_path = "file://" + emr_path + parquet_folder_name + '/' + producer_tbl_name
+        output_path = bucket_name + parquet_folder_name + '/' + producer_tbl_name
+        save_to_parquet(writers_df, output_path)
+        
+        # output_path = "file://" + emr_path + parquet_folder_name + '/' + writer_tbl_name
+        output_path = bucket_name + parquet_folder_name + '/' + writer_tbl_name
+        save_to_parquet(producers_df, output_path)
+
+            
+def read_json(spark, folder_name, key, bucket_name):
     #dataframe = spark.read.option("multiline","true").json("../" + folder_name + "/" + dir + "/*.json")
-    dataframe = spark.read.option("multiline","true").json("file://" + emr_path  + folder_name + "/" + dir + "/*.json")
+    dataframe = spark.read.option("multiline","true").json(bucket_name + key + "/*.json")
     
     cols = [ col('imdbID'), col('localized title'), col('languages'), col('runtimes'), col('original air date'),
             col('plot'), col('cast'), col('music department'), col('genres'),
@@ -93,8 +190,6 @@ def convert_list_column(dataframe):
 
 
 def save_to_parquet(dataframe, parquet_path):
-    if not os.path.exists(parquet_path):
-        os.makedirs(parquet_path)
 
     dataframe.write.mode('append').parquet(parquet_path)
     
@@ -143,124 +238,3 @@ def remove_quotes(dataframe, movie_flag):
         final_dataframe = final_dataframe.withColumn('producer_name', regexp_replace('producer_name', '"', ''))  
     
     return final_dataframe
-
-if __name__=="__main__":
-        
-    spark = create_spark_session(APP_NAME)
-
-    config_data = load_config() 
-
-    data_folder_name = config_data['data']['data_folder_name']
-
-    parquet_folder_name = config_data['data']['parquet_folder_name']
-
-    emr_path = config_data['paths']['emr_path']
-
-    movie_tbl_name = config_data['athena']['movie_tbl_name']
-
-    genre_tbl_name = config_data['athena']['genre_tbl_name']
-
-    artist_tbl_name = config_data['athena']['artist_tbl_name']
-
-    music_tbl_name = config_data['athena']['music_tbl_name']
-
-    director_tbl_name = config_data['athena']['director_tbl_name']
-
-    producer_tbl_name = config_data['athena']['producer_tbl_name']
-
-    writer_tbl_name = config_data['athena']['writer_tbl_name']
-
-    s3_bucket_path = config_data['s3_bucket_details']['s3_bucket_path']
-
-    try:
-        shutil.rmtree('../' + parquet_folder_name)
-    except:
-        pass
-
-    all_dirs = os.listdir('../' + data_folder_name)
-
-    args = arg_parser('Please specify parquet location')
-
-    local_parquet_path = "file://" + emr_path + parquet_folder_name + '/'
-
-    s3_parquet_path = s3_bucket_path + parquet_folder_name + '/'
-
-    if args == 'local':
-        output_data_path = local_parquet_path 
-    elif args == 's3':
-        output_data_path = s3_parquet_path
-    else:
-        raise Exception("Please specify parquet destination s3 or local")
-
-
-    for dir in all_dirs:
-        input_df = read_json(data_folder_name, dir, emr_path)
-
-        non_null_df = fill_null_values(input_df)
-
-        formatted_df = clean_date_column(non_null_df)
-
-        formatted_df = convert_list_column(formatted_df)
-     
-        base_df = input_df
-
-        cols_list = ['movie_cast','music_department', 'genre','director_name', 'writer_name', 'producer_name']
-
-        for col_name in cols_list:
-            d_type = dict(base_df.dtypes)[col_name]
-            if d_type == 'string':
-                base_df = convert_to_array_type(base_df, col_name)
-
-        converted_df = base_df
-
-        for col_name in cols_list:
-            d_type = dict(converted_df.dtypes)[col_name]
-            if d_type == 'array<string>':
-                converted_df = explode_array_columns(converted_df, col_name)   
-
-        unique_movie_df = formatted_df.dropDuplicates()
-
-        unique_movie_df = remove_quotes(unique_movie_df, True)
-        converted_df = remove_quotes(converted_df, False)
-
-        idx = 0
-
-
-        movie_cast_df = converted_df.select(col('imdbID'), col(cols_list[idx])).dropDuplicates()
-        music_department_df = converted_df.select(col('imdbID'), col(cols_list[idx+1])).dropDuplicates()
-        genres_df = converted_df.select(col('imdbID'), col(cols_list[idx+2])).dropDuplicates()
-        directors_df = converted_df.select(col('imdbID'), col(cols_list[idx+3])).dropDuplicates()
-        writers_df = converted_df.select(col('imdbID'), col(cols_list[idx+4])).dropDuplicates()
-        producers_df = converted_df.select(col('imdbID'), col(cols_list[idx+5])).dropDuplicates()
-
-
-        # output_path = "file://" + emr_path + parquet_folder_name + '/'  + movie_tbl_name
-        output_path = output_data_path + movie_tbl_name
-        save_to_parquet(unique_movie_df, output_path)
-
-        # output_path = "file://" + emr_path + parquet_folder_name + '/' + artist_tbl_name
-        output_path = output_data_path + artist_tbl_name
-        save_to_parquet(movie_cast_df, output_path)
-        
-        # output_path = "file://" + emr_path + parquet_folder_name + '/' + music_tbl_name
-        output_path = output_data_path + music_tbl_name
-        save_to_parquet(music_department_df, output_path)
-        
-        # output_path = "file://" + emr_path + parquet_folder_name + '/' + genre_tbl_name
-        output_path = output_data_path + genre_tbl_name
-        save_to_parquet(genres_df, output_path)
-        
-        # output_path = "file://" + emr_path + parquet_folder_name + '/' + director_tbl_name
-        output_path = output_data_path + director_tbl_name
-        save_to_parquet(directors_df, output_path)
-        
-        # output_path = "file://" + emr_path + parquet_folder_name + '/' + producer_tbl_name
-        output_path = output_data_path + producer_tbl_name
-        save_to_parquet(writers_df, output_path)
-        
-        # output_path = "file://" + emr_path + parquet_folder_name + '/' + writer_tbl_name
-        output_path = output_data_path + writer_tbl_name
-        save_to_parquet(producers_df, output_path)
-
-            
-

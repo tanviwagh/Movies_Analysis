@@ -8,8 +8,8 @@ import boto3
 from app.utils.helper import connect_to_aws_service_client
 
 def process(spark, config):
-    bucket_name = config['s3_bucket_details']['bucket_name']
-    data_folder_name = config['data']['data_folder_loc']
+    bucket_name = config['s3_bucket_details']['s3_bucket_data_path']
+    data_folder_name = config['data']['data_folder_name']
 
     imdb_obj = IMDb()
 
