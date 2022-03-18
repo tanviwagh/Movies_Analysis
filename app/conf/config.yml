@@ -1,0 +1,34 @@
+aws_credentials:
+    access_key: ''
+    secret_key: ''
+
+s3_bucket_details:
+    region_name: 'us-east-1'
+    bucket_name: 'movie-analysis-bucket'
+    s3_bucket_path: 's3://movie-analysis-code-bucket/'
+    s3_bucket_data_path: 's3://movie-analysis-data-bucket'
+
+data:
+    data_folder_name: data
+    parquet_folder_name: parquet
+    data_folder_loc: Movie_Analysis/app/data
+
+paths:
+    emr_path: '/home/hadoop/Movies_Analysis/'
+
+athena:
+    db_name: 'test'
+    movie_tbl_name: 'movies'
+    movie_s3_loc: 's3://movie-analysis-data-bucket/parquet/movies/'
+    genre_tbl_name: 'genres'
+    genre_s3_loc: 's3://movie-analysis-data-bucket/parquet/genres/'
+    artist_tbl_name: 'artists'
+    artist_s3_loc: 's3://movie-analysis-data-bucket/parquet/artists/'
+    music_tbl_name: 'music'
+    music_s3_loc: 's3://movie-analysis-data-bucket/parquet/music/'
+    director_tbl_name: 'directors'
+    director_s3_loc: 's3://movie-analysis-data-bucket/parquet/directors/'
+    producer_tbl_name: 'producers'
+    producer_s3_loc: 's3://movie-analysis-data-bucket/parquet/producers/'
+    writer_tbl_name: 'writers'
+    writer_s3_loc: 's3://movie-analysis-data-bucket/parquet/writers/'
