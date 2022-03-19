@@ -32,3 +32,10 @@ athena:
     producer_s3_loc: 's3://movie-analysis-data-bucket/parquet/producers/'
     writer_tbl_name: 'writers'
     writer_s3_loc: 's3://movie-analysis-data-bucket/parquet/writers/'
+
+dags:
+    get_movie_data_script_path: 'app/code/get_movie_data.py'
+    data_cleaning_script_path: 'app/code/data_cleaning.py'
+    schema_creation_script_path: 'app/code/schema_creation.py'
+    data_quality_check_script_path : 'app/code/data_quality_check.py'
+    config_path: 's3://movie-analysis-code-bucket/app/conf/config.yml'
