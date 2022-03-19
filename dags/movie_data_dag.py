@@ -1,22 +1,28 @@
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators.python_operator import PythonOperator, BranchPythonOperator
 from datetime import datetime, time, timedelta
-from airflow.utils.trigger_rule import TriggerRule
 from airflow import DAG, AirflowException
 import subprocess
 import json
 import boto3
 import yaml
 from yaml.loader import SafeLoader
+import os 
 
 START_DATE = datetime.now() - timedelta(minutes=1470)
 
-CONFIG_PATH = "s3://movie-analysis-code-bucket/app/conf/config.yml"
+CONFIG_PATH = "s3://movie-analysis-code-bucket/Movie_Analysis/app/conf/config.yml"
 
-EMR_IP_ADDRESS = ""
+EMR_IP_ADDRESS = "ec2-44-200-73-52.compute-1.amazonaws.com"
 
 SSH_CONNECT = "ssh -i /usr/local/airflow/ssh/emr-kpx.pem hadoop@"
+
+ACCESS_KEY = "AKIASWVFWH4YNFHDHJGU" 
+
+SECRET_KEY = "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"
+
+REGION_NAME = "us-east-1"
+
 
 def path_to_bucket_key(path):
     path = path.split('/')
@@ -27,11 +33,17 @@ def path_to_bucket_key(path):
 
 
 def read_s3_file(path, encoding='utf8'):
-    s3_client = boto3.client('s3')
+    s3_client = boto3.client('s3',
+            region_name=REGION_NAME,
+            aws_access_key_id=ACCESS_KEY,
+            aws_secret_access_key= SECRET_KEY)
 
     bucket, key = path_to_bucket_key(path)
 
     obj = s3_client.get_object(Bucket=bucket, Key=key)
+
+    print("CWD is", os.getcwd())
+    print("ALL DIRS", os.listdir())
 
     return obj['Body'].read().decode(encoding)
 
@@ -48,13 +60,13 @@ schema_creation_script_path = config['dags']['schema_creation_script_path']
 
 data_quality_check_script_path = config['dags']['data_quality_check_script_path']
 
-execute_get_movie_data_script_cmd = f"{SSH_CONNECT} {EMR_IP_ADDRESS} spark-submit main.py '{'job_name': get_movie_data_script_path, 'path':{CONFIG_PATH}}'"
+execute_get_movie_data_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit /home/hadoop/Movie_Analysis/main.py '{{'job_name': '{get_movie_data_script_path}', 'path': '{CONFIG_PATH}'}}'"
 
-execute_data_cleaning_script_cmd = f"{SSH_CONNECT} {EMR_IP_ADDRESS} spark-submit main.py '{'job_name': data_cleaning_script_path, 'path':{CONFIG_PATH}}'"
+execute_data_cleaning_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit /home/hadoop/Movie_Analysis/main.py '{{'job_name': '{data_cleaning_script_path}', 'path': '{CONFIG_PATH}'}}'"
 
-execute_schema_creation_script_cmd = f"{SSH_CONNECT} {EMR_IP_ADDRESS} spark-submit main.py '{'job_name': schema_creation_script_path, 'path':{CONFIG_PATH}}'"
+execute_schema_creation_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit /home/hadoop/Movie_Analysis/main.py '{{'job_name': '{schema_creation_script_path}', 'path': '{CONFIG_PATH}'}}'"
 
-execute_data_quality_check_script_cmd = f"{SSH_CONNECT} {EMR_IP_ADDRESS} spark-submit main.py '{'job_name': data_quality_check_script_path, 'path':{CONFIG_PATH}}'"
+execute_data_quality_check_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit /home/hadoop/Movie_Analysis/main.py '{{'job_name': '{data_quality_check_script_path}', 'path': '{CONFIG_PATH}'}}'"
 
     
 default_args = {
@@ -71,7 +83,7 @@ default_args = {
 
 }
 
-dag_obj = DAG('get_daily_data_dag', max_active_runs=1, schedule_interval="0 3 * * 2-6", catchup=False, default_args=default_args)
+dag_obj = DAG('movie_data_dag', max_active_runs=1, schedule_interval=None, catchup=False, default_args=default_args)
 
 start_task = DummyOperator(task_id = "start", dag = dag_obj)
 
@@ -83,6 +95,6 @@ schema_creation_task = BashOperator(task_id="schema_creation", bash_command = ex
 
 data_quality_check_task = BashOperator(task_id="data_quality_check", bash_command = execute_data_quality_check_script_cmd, dag = dag_obj)
 
-end_task = DummyOperator(task_id="end", dag=dag_obj, trigger_rule=TriggerRule.ONE_SUCCESS)
+end_task = DummyOperator(task_id="end", dag=dag_obj)
 
 start_task >> get_movie_data_task >> data_cleaning_task >> schema_creation_task >> data_quality_check_task >> end_task
