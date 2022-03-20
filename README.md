@@ -71,13 +71,18 @@ Movie_Analysis
 
 ## Files Description 
 1. **config.yml** - configuration file
-2. **get_movie_data.py** - 
-3. **data_cleaning.py** -  
-4. **schema_creation.py** - 
-5. **data_quality_check.py** - 
-6. **helper.py** -  
-7. **s3_helper.py** 
-8. **movie_data_dag.py** -
+2. **main.py** - main file to run all the modules
+3. **get_movie_data.py** - extracts recent movie data from using IMDbPY
+4. **data_cleaning.py** -  preprocesses the data using PySpark
+5. **schema_creation.py** - creates schema for tables in AWS Athena
+6. **data_quality_check.py** - performs the following checks:-
+    - row count check
+    - null values check
+    - table exists check
+7. **helper.py** -  general purpose helper functions 
+8. **s3_helper.py** - AWS S3 helper functions 
+9. **movie_data_dag.py** - DAG which runs on every Friday to extract recently 
+released movies data
 
 
 ## Setup
