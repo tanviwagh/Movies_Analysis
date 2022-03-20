@@ -17,9 +17,9 @@ EMR_IP_ADDRESS = "ec2-44-200-73-52.compute-1.amazonaws.com"
 
 SSH_CONNECT = "ssh -i /usr/local/airflow/ssh/emr-kpx.pem hadoop@"
 
-ACCESS_KEY = "AKIASWVFWH4YNFHDHJGU" 
+ACCESS_KEY = "" 
 
-SECRET_KEY = "lazytXST/+7ar0abnJ3fj6Ioe71uyDLJsMrCgg58"
+SECRET_KEY = ""
 
 REGION_NAME = "us-east-1"
 
