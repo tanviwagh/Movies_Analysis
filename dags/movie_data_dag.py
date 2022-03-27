@@ -13,9 +13,9 @@ START_DATE = datetime.now() - timedelta(minutes=1470)
 
 CONFIG_PATH = "s3://movie-analysis-code-bucket/Movie_Analysis/app/conf/config.yml"
 
-EMR_IP_ADDRESS = "ec2-44-200-73-52.compute-1.amazonaws.com"
+EMR_IP_ADDRESS = "ec2-44-192-89-241.compute-1.amazonaws.com"
 
-SSH_CONNECT = "ssh -i /usr/local/airflow/ssh/emr-kpx.pem hadoop@"
+SSH_CONNECT = "ssh -i C:/Users/DELL/airflow/airflow-tutorial/emr-kpx.pem hadoop@"
 
 ACCESS_KEY = "" 
 
@@ -60,13 +60,15 @@ schema_creation_script_path = config['dags']['schema_creation_script_path']
 
 data_quality_check_script_path = config['dags']['data_quality_check_script_path']
 
-execute_get_movie_data_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit /home/hadoop/Movie_Analysis/main.py '{{'job_name': '{get_movie_data_script_path}', 'path': '{CONFIG_PATH}'}}'"
+main_path = config['paths']['main_path']
 
-execute_data_cleaning_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit /home/hadoop/Movie_Analysis/main.py '{{'job_name': '{data_cleaning_script_path}', 'path': '{CONFIG_PATH}'}}'"
+execute_get_movie_data_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit {main_path}'{{'job_name': '{get_movie_data_script_path}', 'path': '{CONFIG_PATH}'}}'"
 
-execute_schema_creation_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit /home/hadoop/Movie_Analysis/main.py '{{'job_name': '{schema_creation_script_path}', 'path': '{CONFIG_PATH}'}}'"
+execute_data_cleaning_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit {main_path} '{{'job_name': '{data_cleaning_script_path}', 'path': '{CONFIG_PATH}'}}'"
 
-execute_data_quality_check_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit /home/hadoop/Movie_Analysis/main.py '{{'job_name': '{data_quality_check_script_path}', 'path': '{CONFIG_PATH}'}}'"
+execute_schema_creation_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit {main_path} '{{'job_name': '{schema_creation_script_path}', 'path': '{CONFIG_PATH}'}}'"
+
+execute_data_quality_check_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit {main_path} '{{'job_name': '{data_quality_check_script_path}', 'path': '{CONFIG_PATH}'}}'"
 
     
 default_args = {
@@ -83,7 +85,7 @@ default_args = {
 
 }
 
-dag_obj = DAG('movie_data_dag', max_active_runs=1, schedule_interval=None, catchup=False, default_args=default_args)
+dag_obj = DAG('movie_data_dag', max_active_runs=1, schedule_interval="0 10 * * FRI", catchup=False, default_args=default_args)
 
 start_task = DummyOperator(task_id = "start", dag = dag_obj)
 

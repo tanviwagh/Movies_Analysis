@@ -15,6 +15,7 @@ data:
 
 paths:
     emr_path: '/home/hadoop/Movies_Analysis/'
+    main_path: Movie_Analysis/main.py
 
 athena:
     db_name: 'test'
