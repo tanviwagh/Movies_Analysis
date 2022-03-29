@@ -7,6 +7,7 @@
 
 
 ## Architecture Diagram
+![Architecture Diagram](https://raw.githubusercontent.com/tanviwagh/Movies_Analysis/pre-prod/images/ArchitectureDiagram.png)
 
 
 ## Tech Stack
