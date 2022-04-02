@@ -33,6 +33,8 @@ athena:
     producer_s3_loc: 's3://movie-analysis-data-bucket/parquet/producers/'
     writer_tbl_name: 'writers'
     writer_s3_loc: 's3://movie-analysis-data-bucket/parquet/writers/'
+    senti_tbl_name: 'sentiment'
+    senti_s3_loc: 's3://movie-analysis-data-bucket/parquet/sentiment/'
 
 dags:
     get_movie_data_script_path: 'get_movie_data'

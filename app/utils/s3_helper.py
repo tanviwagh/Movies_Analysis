@@ -1,5 +1,4 @@
 import boto3 
-from app.utils.helper import connect_to_aws_service_client
 
 def path_to_bucket_key(path):
     path = path.split('/')
@@ -10,7 +9,7 @@ def path_to_bucket_key(path):
 
 
 def read_s3_file(path, encoding='utf8'):
-    s3_client = connect_to_aws_service_client('s3')
+    s3_client = boto3.client('s3')
 
     bucket, key = path_to_bucket_key(path)
 
