@@ -41,3 +41,4 @@ dags:
     data_cleaning_script_path: 'data_cleaning'
     schema_creation_script_path: 'schema_creation'
     data_quality_check_script_path : 'data_quality_check'
+    sentiment_analysis_script_path : 'sentiment_analysis'

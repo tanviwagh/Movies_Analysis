@@ -60,6 +60,8 @@ schema_creation_script_path = config['dags']['schema_creation_script_path']
 
 data_quality_check_script_path = config['dags']['data_quality_check_script_path']
 
+sentiment_analysis_script_path = config['dags']['data_quality_check_script_path']
+
 main_path = config['paths']['main_path']
 
 execute_get_movie_data_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit {main_path}'{{'job_name': '{get_movie_data_script_path}', 'path': '{CONFIG_PATH}'}}'"
@@ -70,6 +72,7 @@ execute_schema_creation_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submi
 
 execute_data_quality_check_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit {main_path} '{{'job_name': '{data_quality_check_script_path}', 'path': '{CONFIG_PATH}'}}'"
 
+execute_sentiment_analysis_script_cmd = f"{SSH_CONNECT}{EMR_IP_ADDRESS} spark-submit {main_path} '{{'job_name': '{sentiment_analysis_script_path}', 'path': '{CONFIG_PATH}'}}'"
     
 default_args = {
 
@@ -97,6 +100,8 @@ schema_creation_task = BashOperator(task_id="schema_creation", bash_command = ex
 
 data_quality_check_task = BashOperator(task_id="data_quality_check", bash_command = execute_data_quality_check_script_cmd, dag = dag_obj)
 
+sentiment_analysis_task = BashOperator(task_id="sentiment_analysis", bash_command = execute_sentiment_analysis_script_cmd, dag = dag_obj)
+
 end_task = DummyOperator(task_id="end", dag=dag_obj)
 
-start_task >> get_movie_data_task >> data_cleaning_task >> schema_creation_task >> data_quality_check_task >> end_task
+start_task >> get_movie_data_task >> data_cleaning_task >> schema_creation_task >> data_quality_check_task >> sentiment_analysis_task >> end_task
