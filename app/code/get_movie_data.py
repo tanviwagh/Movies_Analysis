@@ -5,14 +5,19 @@ import json
 import os
 from imdb import IMDb, IMDbDataAccessError
 import boto3 
+from datetime import date
 
 def process(spark, config):
+    today_date = date.today() 
+    current_year = today_date.year
+    
     bucket_name = config['s3_bucket_details']['s3_bucket_data_path']
     data_folder_name = config['data']['data_folder_name']
 
     imdb_obj = IMDb()
 
     # loop through years
+    # for year in range(current_year, current_year+1)
     for year in range(2001,2002):
         names = get_names_from_wiki(year)
         print(len(names))
